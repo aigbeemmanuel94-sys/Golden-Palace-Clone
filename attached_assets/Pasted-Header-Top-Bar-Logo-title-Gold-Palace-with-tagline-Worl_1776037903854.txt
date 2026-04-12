@@ -1,0 +1,45 @@
+Header / Top Bar:
+	•  Logo/title: “Gold Palace” with tagline “World’s First 22k Gold Jewelry Online Store (Since 1994)”
+	•  Promotional banner: “10% OFF GOLD & DIAMOND JEWELRY - IWD2026”
+	•  Navigation menu: Rings, Earrings, Mangalsutra, Necklace, Bracelet, Chain, Pendant
+	•  Cart icon: “Shopping Cart (0 items)”
+	•  Keep or add “Complimentary Insured Shipping on all orders over $500”
+•  Hero Section:
+	•  Elegant luxury design with gold accents
+	•  Headline similar to “Heirloom Elegance, Masterfully Crafted”
+	•  Text: Emphasize “One of the world’s oldest online jewelry shops since 1994”, master artisans, 100% authentic 22K gold & conflict-free diamonds
+	•  Buttons: “Shop 22K Gold”, “Shop Diamonds”, “New Arrivals”
+•  Product Sections (responsive grid, nice cards with images):
+	•  New Arrivals:
+		•  Use realistic prices and gold weights like the real site:
+			•  22K Yellow Gold Classy Medium Pendant – 1.6g – $566.12
+			•  22K Yellow Gold Classy Pendant – 1.74g – $612.16
+			•  22K Yellow Gold Classy Medium Pendant – 2.25g – $779.86
+			•  22K Yellow Gold Religious Om Large Pendant – 5.74g – $1,397.41
+			•  22K Yellow Gold Initial L Pendant – 1.62g – $572.70
+		•  Each card: product image (use placeholder URLs like https://picsum.photos/id/XX/300/300 with jewelry-themed images or unsplash gold jewelry links), title, weight, price, “Add to Cart” button
+	•  Trending Now / Trending Diamonds:
+		•  Discounted items with strike-through original price and % off:
+			•  18K Yellow Gold + Diamond Mangalsutra Necklace – 3.05g – $1,046.00 (was $1,394.00, -25%)
+			•  18K Yellow Gold Diamond Stud Earrings – 1.44g – $546.00 (was $728.00, -25%)
+			•  18K Yellow Gold Round Diamond Nose Pin – 0.05ct – $320.00 (was $400.00, -20%)
+			•  18K Yellow Gold Diamond Mangalsutra Necklace Heavy – $2,126.00 (was $2,835.00, -25%)
+		•  “Quick Add” or “Add to Cart” buttons
+•  Additional Sections:
+	•  “Expertly Crafted by Master Artisans”
+	•  “Guaranteed 100% Authentic”
+	•  Bridal Trousseau highlight with “Explore Bridal” button
+•  Promotions:
+	•  Banner or section: “Take 20% off your first order with code CODESALE20”
+•  Footer:
+	•  Social icons: Facebook, Instagram, Pinterest, YouTube, Twitter/X
+	•  Newsletter signup: “Sign Up for exclusive updates, new arrivals & insider only discounts”
+	•  Clean links to categories and company info
+Overall style:
+•  Luxury, elegant, minimalist jewelry store look (gold, cream, white + black text)
+•  High-quality feel, modern clean CSS (you can use Tailwind if easier, or vanilla CSS)
+•  Fully responsive (works great on mobile)
+•  Smooth hover effects on products
+•  Remove the “temporary development preview” banner completely
+•  Fix all $NaN prices to the realistic ones above
+Generate the complete single index.html file (with embedded <style> and <script> tags) that I can directly paste and replace in my Replit project. Make it look professional and trustworthy like the real goldpalace.co

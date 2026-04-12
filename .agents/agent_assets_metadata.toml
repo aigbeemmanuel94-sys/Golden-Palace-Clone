@@ -1,0 +1,91 @@
+uploads = []
+
+[[generated]]
+id = "GSKPaor1VG9fYURcrboz1"
+uri = "file://artifacts/gold-palace/public/images/hero-1.png"
+type = "image"
+title = "Hero diamond necklace on velvet"
+
+[[generated]]
+id = "G71-IYdVAKGxgQtYRWdyS"
+uri = "file://artifacts/gold-palace/public/images/hero-2.png"
+type = "image"
+title = "Hero 22K gold bridal set"
+
+[[generated]]
+id = "Zb7tkM34BzfuDGq_Yjc_q"
+uri = "file://artifacts/gold-palace/public/images/cat-ring.png"
+type = "image"
+title = "22K gold Indian ring"
+
+[[generated]]
+id = "Ag12gqWt7T5m9nya26qWc"
+uri = "file://artifacts/gold-palace/public/images/cat-earrings.png"
+type = "image"
+title = "Gold jhumka earrings"
+
+[[generated]]
+id = "OW2gWxdRq1vLO7gCUC0rg"
+uri = "file://artifacts/gold-palace/public/images/cat-mangalsutra.png"
+type = "image"
+title = "Gold mangalsutra necklace"
+
+[[generated]]
+id = "vvDpSx6Nn7xwYbGpTQW9p"
+uri = "file://artifacts/gold-palace/public/images/cat-necklace.png"
+type = "image"
+title = "Antique bridal gold necklace"
+
+[[generated]]
+id = "8cZN2XkOCg_DW1osTfZWX"
+uri = "file://artifacts/gold-palace/public/images/cat-bracelet.png"
+type = "image"
+title = "Intricate gold bangle bracelet"
+
+[[generated]]
+id = "B2_D4g2onDeNZFYYYCOAh"
+uri = "file://artifacts/gold-palace/public/images/prod-1.png"
+type = "image"
+title = "Gold filigree pendant"
+
+[[generated]]
+id = "R4BbjonQpO69Vp0_q9dD0"
+uri = "file://artifacts/gold-palace/public/images/prod-2.png"
+type = "image"
+title = "Traditional 22K gold chain"
+
+[[generated]]
+id = "CrYwV6XEfb4tHDrg3HGKF"
+uri = "file://artifacts/gold-palace/public/images/prod-3.png"
+type = "image"
+title = "Diamond gold ring"
+
+[[outputs]]
+id = "9_BP5_umZ7Fa5DMk4LNqF"
+uri = "file://artifacts/gold-palace/public/images/prod-4.jpg"
+type = "image"
+title = "diamond stud earrings luxury jewelry"
+
+[[outputs]]
+id = "b9SXHJ4g0A8AXceL4M6SW"
+uri = "file://artifacts/gold-palace/public/images/prod-5.jpg"
+type = "image"
+title = "gold bangle bracelet indian jewelry"
+
+[[outputs]]
+id = "_2joVOnbmp5Kz4SBab0w9"
+uri = "file://artifacts/gold-palace/public/images/prod-6.jpg"
+type = "image"
+title = "emerald diamond ring luxury jewelry"
+
+[[outputs]]
+id = "8xM4-ziGm74mtVySLdaFD"
+uri = "file://artifacts/gold-palace/public/images/prod-7.jpg"
+type = "image"
+title = "ruby pendant necklace luxury jewelry"
+
+[[outputs]]
+id = "OhWiZbCQOehyLCyaak4my"
+uri = "file://artifacts/gold-palace/public/images/prod-9.jpg"
+type = "image"
+title = "mens thick gold chain jewelry"

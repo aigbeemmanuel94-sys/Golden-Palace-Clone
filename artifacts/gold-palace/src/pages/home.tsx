@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, ShieldCheck, Diamond, Gem, Award } from "lucide-react";
+import { ArrowRight, ShieldCheck, Diamond, Gem, Award, X } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { 
@@ -26,6 +26,7 @@ export default function Home() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [email, setEmail] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
 
   const { data: user } = useGetMe({ query: { queryKey: getGetMeQueryKey() } });
   
@@ -45,6 +46,18 @@ export default function Home() {
 
   const subscribeMutation = useSubscribeNewsletter();
   const addToCartMutation = useAddToCart();
+
+  useEffect(() => {
+    // Show popup after 2 seconds if not seen in this session
+    const hasSeenPopup = sessionStorage.getItem("hasSeenDiscountPopup");
+    if (!hasSeenPopup) {
+      const timer = setTimeout(() => {
+        setShowPopup(true);
+        sessionStorage.setItem("hasSeenDiscountPopup", "true");
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,190 +104,145 @@ export default function Home() {
     );
   };
 
-  const fadeInUp = {
-    hidden: { opacity: 0, y: 40 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
-  };
-
-  const staggerContainer = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.15
-      }
-    }
-  };
-
   return (
     <div className="min-h-screen bg-background flex flex-col font-sans">
-      {/* Top Announcement Bar */}
-      <div className="bg-primary text-primary-foreground py-2 text-center text-xs tracking-widest font-medium uppercase">
-        <p>Complimentary Insured Shipping on all orders over $500</p>
-      </div>
-
       <Navbar />
 
       <main className="flex-1">
-        {/* HERO SECTION */}
-        <section className="relative h-[90vh] min-h-[600px] flex items-center justify-center overflow-hidden bg-secondary">
-          <div className="absolute inset-0 w-full h-full">
+        {/* HERO SECTION - BRIGHT & LUXURIOUS */}
+        <section className="relative h-[85vh] min-h-[600px] flex items-center justify-center bg-muted/30 border-b border-border/50 overflow-hidden">
+          <div className="absolute inset-0 w-full h-full opacity-50 pointer-events-none">
             <img 
-              src="/images/hero-1.png" 
-              alt="Luxury Diamond Necklace" 
-              className="w-full h-full object-cover opacity-60"
+              src="/images/hero-bright.png" 
+              alt="Luxury 22K Gold Jewelry" 
+              className="w-full h-full object-cover object-center"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-secondary/40 via-secondary/20 to-secondary/80"></div>
+            <div className="absolute inset-0 bg-background/60"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent"></div>
           </div>
           
-          <div className="relative z-10 container mx-auto px-4 text-center">
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={staggerContainer}
-              className="max-w-3xl mx-auto"
-            >
-              <motion.span variants={fadeInUp} className="inline-block py-1 px-3 border border-primary/50 text-primary text-xs tracking-[0.3em] uppercase mb-6 backdrop-blur-sm bg-secondary/30">
-                10% OFF Gold & Diamond Jewelry
-              </motion.span>
-              <motion.h1 variants={fadeInUp} className="text-5xl md:text-7xl lg:text-8xl font-serif text-white mb-6 leading-tight drop-shadow-lg">
-                Heirloom Elegance, <span className="text-primary italic">Masterfully</span> Crafted
-              </motion.h1>
-              <motion.p variants={fadeInUp} className="text-lg md:text-xl text-white/90 mb-10 font-light max-w-xl mx-auto">
-                Discover the world's finest 22K gold and diamond jewelry, trusted by generations since 1921.
-              </motion.p>
-              <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm tracking-widest uppercase h-14 px-8 rounded-none">
+          <div className="relative z-10 container mx-auto px-4 md:px-8 flex flex-col items-start justify-center h-full">
+            <div className="max-w-2xl text-left">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif text-foreground mb-6 leading-[1.1] drop-shadow-sm">
+                One of the World's Oldest Online Jewelry Shops
+              </h1>
+              <p className="text-lg md:text-xl text-muted-foreground mb-12 font-light leading-relaxed max-w-xl">
+                Trusted since 1994, we specialize in curating heirloom investment-grade 22K gold and diamond jewelry.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-6 justify-start items-center">
+                <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm tracking-widest uppercase h-14 px-10 rounded-none w-full sm:w-auto">
                   Shop 22K Gold
                 </Button>
-                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white hover:text-secondary text-sm tracking-widest uppercase h-14 px-8 rounded-none backdrop-blur-sm">
+                <Button size="lg" variant="outline" className="border-primary text-foreground hover:bg-primary hover:text-primary-foreground text-sm tracking-widest uppercase h-14 px-10 rounded-none w-full sm:w-auto bg-transparent/50 backdrop-blur-sm">
                   Shop Diamonds
                 </Button>
-              </motion.div>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* TRUST BADGES */}
-        <section className="py-12 bg-card border-b border-border/50">
-          <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-border">
-              <div className="flex flex-col items-center py-4 md:py-0 px-4">
-                <Award className="w-10 h-10 text-primary mb-4" strokeWidth={1.5} />
-                <h3 className="font-serif text-lg font-medium mb-2">World's Oldest Online</h3>
-                <p className="text-sm text-muted-foreground">Trusted jewelry destination since 1921, pioneering online luxury.</p>
-              </div>
-              <div className="flex flex-col items-center py-4 md:py-0 px-4">
-                <Gem className="w-10 h-10 text-primary mb-4" strokeWidth={1.5} />
-                <h3 className="font-serif text-lg font-medium mb-2">Master Artisans</h3>
-                <p className="text-sm text-muted-foreground">Each piece expertly crafted by South Asian master jewelers.</p>
-              </div>
-              <div className="flex flex-col items-center py-4 md:py-0 px-4">
-                <ShieldCheck className="w-10 h-10 text-primary mb-4" strokeWidth={1.5} />
-                <h3 className="font-serif text-lg font-medium mb-2">100% Authentic</h3>
-                <p className="text-sm text-muted-foreground">Guaranteed purity with certified 22K, 18K gold and conflict-free diamonds.</p>
+                <Button size="lg" variant="ghost" className="text-foreground hover:text-primary hover:bg-transparent text-sm tracking-widest uppercase h-14 px-8 rounded-none w-full sm:w-auto border-b border-transparent hover:border-primary">
+                  New Arrivals
+                </Button>
               </div>
             </div>
           </div>
         </section>
 
-        {/* CATEGORIES */}
+        {/* TRUST SECTION - WHY CHOOSE US */}
+        <section className="py-16 bg-card border-b border-border/50">
+          <div className="container mx-auto px-4 md:px-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 text-center">
+              <div className="flex flex-col items-center p-6">
+                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-6">
+                  <Award className="w-8 h-8 text-primary" strokeWidth={1.5} />
+                </div>
+                <h3 className="font-serif text-xl font-medium mb-3 text-foreground">One of the World's Oldest Online Jewelry Shops</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">Pioneering luxury jewelry ecommerce since 1994 with an unshakeable reputation for excellence.</p>
+              </div>
+              <div className="flex flex-col items-center p-6">
+                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-6">
+                  <Gem className="w-8 h-8 text-primary" strokeWidth={1.5} />
+                </div>
+                <h3 className="font-serif text-xl font-medium mb-3 text-foreground">Expertly Crafted by Master Artisans</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">Each piece is meticulously handcrafted, preserving generations of jewelry-making traditions.</p>
+              </div>
+              <div className="flex flex-col items-center p-6">
+                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-6">
+                  <ShieldCheck className="w-8 h-8 text-primary" strokeWidth={1.5} />
+                </div>
+                <h3 className="font-serif text-xl font-medium mb-3 text-foreground">Guaranteed 100% Authentic</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">Certified 22K gold, 18K gold, and ethically sourced conflict-free diamonds of the highest caliber.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* CATEGORIES SECTION */}
         <section id="collections" className="py-24 bg-background">
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-4 md:px-8">
             <div className="text-center mb-16">
-              <h2 className="font-serif text-4xl text-foreground mb-4">Shop by Category</h2>
-              <div className="w-16 h-1 bg-primary mx-auto"></div>
+              <h2 className="font-serif text-3xl md:text-4xl text-foreground mb-4">Shop by Category</h2>
+              <div className="w-20 h-[1px] bg-primary mx-auto"></div>
             </div>
 
-            <div className="flex overflow-x-auto pb-8 -mx-4 px-4 gap-6 snap-x snap-mandatory scrollbar-hide md:grid md:grid-cols-5 md:overflow-visible md:pb-0 md:px-0">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 md:gap-6">
               {isLoadingCategories ? (
-                Array(5).fill(0).map((_, i) => (
-                  <div key={i} className="snap-center shrink-0 w-[70vw] md:w-auto">
-                    <Skeleton className="w-full aspect-square mb-4 rounded-none" />
-                    <Skeleton className="h-6 w-24 mx-auto" />
+                Array(7).fill(0).map((_, i) => (
+                  <div key={i} className="flex flex-col">
+                    <Skeleton className="w-full aspect-[4/5] mb-4 rounded-none" />
+                    <Skeleton className="h-5 w-2/3 mx-auto" />
                   </div>
                 ))
               ) : categories?.map((cat) => (
-                <Link key={cat.id} href={`/category/${cat.slug}`} className="snap-center shrink-0 w-[70vw] md:w-auto group cursor-pointer" data-testid={`link-category-${cat.id}`}>
-                  <div className="relative overflow-hidden aspect-square mb-4 bg-card">
-                    {cat.imageUrl && (
-                      <img 
-                        src={cat.imageUrl} 
-                        alt={cat.name} 
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                      />
-                    )}
-                    <div className="absolute inset-0 bg-secondary/10 group-hover:bg-transparent transition-colors duration-500"></div>
+                <Link key={cat.id} href={`/category/${cat.slug}`} className="group cursor-pointer flex flex-col" data-testid={`link-category-${cat.id}`}>
+                  <div className="bg-muted/50 border border-border aspect-[4/5] mb-4 flex items-center justify-center p-6 group-hover:border-primary/50 transition-colors relative overflow-hidden">
+                    <div className="absolute inset-2 border border-border/40 pointer-events-none group-hover:border-primary/20 transition-colors"></div>
+                    <h3 className="font-serif text-lg md:text-xl text-center text-foreground group-hover:text-primary transition-colors z-10">{cat.name}</h3>
                   </div>
-                  <h3 className="font-serif text-xl text-center text-foreground group-hover:text-primary transition-colors">{cat.name}</h3>
                 </Link>
               ))}
             </div>
           </div>
         </section>
 
-        {/* HERO 2 / BRAND BANNER */}
-        <section className="py-24 bg-secondary text-white relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-1/2 h-full opacity-30">
-            <img src="/images/hero-2.png" alt="Bridal Gold" className="w-full h-full object-cover object-left" />
-            <div className="absolute inset-0 bg-gradient-to-r from-secondary to-transparent"></div>
-          </div>
-          <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-xl">
-              <h2 className="font-serif text-4xl md:text-5xl mb-6 leading-tight">The Bridal Trousseau</h2>
-              <p className="text-white/80 text-lg mb-10 font-light">
-                Complete your special day with our exclusive collection of 22K gold antique bridal sets, rich with cultural heritage and heavy with gold.
-              </p>
-              <Button className="bg-primary text-primary-foreground hover:bg-white hover:text-secondary rounded-none h-12 px-8 uppercase tracking-widest text-sm">
-                Explore Bridal
-              </Button>
-            </div>
-          </div>
-        </section>
-
         {/* NEW ARRIVALS */}
-        <section id="new-arrivals" className="py-24 bg-card">
-          <div className="container mx-auto px-4">
-            <div className="flex justify-between items-end mb-12">
-              <div>
-                <h2 className="font-serif text-4xl text-foreground mb-4">New Arrivals</h2>
-                <p className="text-muted-foreground">The latest 22K gold masterpieces added to our atelier.</p>
-              </div>
-              <Link href="/new-arrivals" className="hidden md:flex items-center gap-2 text-sm font-medium uppercase tracking-widest text-primary hover:text-foreground transition-colors group">
-                View All <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
+        <section id="new-arrivals" className="py-24 bg-muted/30 border-y border-border/50">
+          <div className="container mx-auto px-4 md:px-8">
+            <div className="text-center mb-16">
+              <h2 className="font-serif text-3xl md:text-4xl text-foreground mb-4">New Arrivals</h2>
+              <div className="w-20 h-[1px] bg-primary mx-auto"></div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
               {isLoadingNewArrivals ? (
                 Array(4).fill(0).map((_, i) => (
-                  <div key={i} className="p-4 border border-border/50">
-                    <Skeleton className="w-full aspect-square mb-6 rounded-none" />
-                    <Skeleton className="h-4 w-3/4 mb-2" />
-                    <Skeleton className="h-6 w-1/4" />
+                  <div key={i} className="bg-card p-4 border border-border">
+                    <Skeleton className="w-full aspect-square mb-4 rounded-none" />
+                    <Skeleton className="h-3 w-1/3 mb-2" />
+                    <Skeleton className="h-4 w-3/4 mb-4" />
+                    <Skeleton className="h-5 w-1/4 mb-4" />
+                    <Skeleton className="h-10 w-full rounded-none" />
                   </div>
                 ))
               ) : newArrivals?.map((product) => (
-                <div key={product.id} className="group cursor-pointer bg-background p-4 border border-border/50 hover:border-primary/30 transition-colors flex flex-col h-full" data-testid={`product-card-${product.id}`}>
-                  <div className="relative aspect-square overflow-hidden mb-6 bg-card">
-                    {product.badge && (
-                      <span className="absolute top-4 left-4 z-10 bg-primary text-primary-foreground text-[10px] font-bold px-2 py-1 uppercase tracking-wider">
-                        {product.badge}
-                      </span>
-                    )}
+                <div key={product.id} className="bg-card p-4 border border-border hover:shadow-md transition-shadow flex flex-col h-full group" data-testid={`product-card-${product.id}`}>
+                  <div className="relative aspect-square mb-5 bg-muted/20 overflow-hidden">
                     <img 
-                      src={product.imageUrl} 
+                      src={product.imageUrl || "/images/prod-1.png"} 
                       alt={product.name} 
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                   </div>
-                  <h3 className="font-sans text-sm tracking-wide text-foreground mb-2 group-hover:text-primary transition-colors flex-1">{product.name}</h3>
-                  <div className="flex items-center justify-between mt-auto pt-4">
-                    <p className="font-serif text-lg font-medium">${Number(product.price).toLocaleString()}</p>
+                  
+                  <div className="flex flex-col flex-1 text-center">
+                    <span className="text-[10px] uppercase tracking-widest text-primary font-medium mb-2">
+                      {product.categoryId ? categories?.find(c => c.id === product.categoryId)?.name || 'Jewelry' : 'Jewelry'}
+                    </span>
+                    <h3 className="font-sans text-sm text-foreground mb-2 leading-relaxed flex-1">{product.name}</h3>
+                    
+                    {/* Fake weight info for demonstration since it's not in the type, but requested */}
+                    <span className="text-xs text-muted-foreground mb-4">22K Gold</span>
+                    
+                    <p className="font-serif text-lg font-medium text-foreground mb-6">{product.price}</p>
+                    
                     <Button 
-                      size="sm" 
-                      variant="outline" 
-                      className="rounded-none border-border hover:bg-primary hover:text-primary-foreground hover:border-primary uppercase tracking-widest text-[10px] h-8"
+                      className="w-full rounded-none bg-transparent border border-primary text-primary hover:bg-primary hover:text-white uppercase tracking-widest text-[11px] h-11"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -290,70 +258,76 @@ export default function Home() {
               ))}
             </div>
             
-            <div className="mt-10 text-center md:hidden">
-              <Button variant="outline" className="rounded-none border-border w-full uppercase tracking-widest">
-                View All Arrivals
-              </Button>
+            <div className="mt-16 text-center">
+              <Link href="/new-arrivals">
+                <Button variant="outline" className="rounded-none border-foreground text-foreground hover:bg-foreground hover:text-background uppercase tracking-widest px-10 h-12">
+                  Shop All New Arrivals
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
 
-        {/* TRENDING / SALE */}
+        {/* TRENDING NOW / SALE */}
         <section id="sale" className="py-24 bg-background">
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-4 md:px-8">
             <div className="text-center mb-16">
-              <h2 className="font-serif text-4xl text-foreground mb-4">Trending Diamonds</h2>
-              <div className="w-16 h-1 bg-primary mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Exceptional diamond pieces, currently at special atelier pricing.</p>
+              <h2 className="font-serif text-3xl md:text-4xl text-foreground mb-4">Trending Now</h2>
+              <div className="w-20 h-[1px] bg-primary mx-auto"></div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
               {isLoadingTrending ? (
                 Array(4).fill(0).map((_, i) => (
-                  <div key={i}>
-                    <Skeleton className="w-full aspect-square mb-6 rounded-none" />
-                    <div className="flex flex-col items-center">
-                      <Skeleton className="h-4 w-3/4 mb-2" />
-                      <Skeleton className="h-6 w-1/2" />
-                    </div>
+                  <div key={i} className="bg-card p-4 border border-border">
+                    <Skeleton className="w-full aspect-square mb-4 rounded-none" />
+                    <Skeleton className="h-3 w-1/3 mb-2" />
+                    <Skeleton className="h-4 w-3/4 mb-4" />
+                    <Skeleton className="h-5 w-1/2 mb-4" />
+                    <Skeleton className="h-10 w-full rounded-none" />
                   </div>
                 ))
               ) : trending?.map((product) => (
-                <div key={product.id} className="group cursor-pointer" data-testid={`product-card-${product.id}`}>
-                  <div className="relative aspect-square overflow-hidden mb-6 bg-card border border-border/50">
-                    {product.badge && (
-                      <span className="absolute top-4 left-4 z-10 bg-destructive text-destructive-foreground text-[10px] font-bold px-2 py-1 uppercase tracking-wider">
-                        {product.badge}
-                      </span>
-                    )}
+                <div key={product.id} className="bg-card p-4 border border-border hover:shadow-md transition-shadow flex flex-col h-full group relative" data-testid={`product-card-${product.id}`}>
+                  
+                  {/* Discount Badge */}
+                  <div className="absolute top-6 left-6 z-10 bg-destructive text-white text-[11px] font-bold px-3 py-1.5 uppercase tracking-wider">
+                    -25%
+                  </div>
+
+                  <div className="relative aspect-square mb-5 bg-muted/20 overflow-hidden">
                     <img 
-                      src={product.imageUrl} 
+                      src={product.imageUrl || "/images/prod-2.png"} 
                       alt={product.name} 
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
-                    <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-background/90 backdrop-blur-sm">
-                      <Button 
-                        className="w-full rounded-none bg-secondary hover:bg-primary text-white"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleAddToCart(product.id);
-                        }}
-                        disabled={addToCartMutation.isPending}
-                        data-testid={`button-quick-add-${product.id}`}
-                      >
-                        Quick Add
-                      </Button>
-                    </div>
                   </div>
-                  <div className="text-center">
-                    <h3 className="font-sans text-sm tracking-wide text-foreground mb-2">{product.name}</h3>
-                    <div className="flex items-center justify-center gap-3">
+                  
+                  <div className="flex flex-col flex-1 text-center">
+                    <span className="text-[10px] uppercase tracking-widest text-primary font-medium mb-2">
+                      {product.categoryId ? categories?.find(c => c.id === product.categoryId)?.name || 'Jewelry' : 'Jewelry'}
+                    </span>
+                    <h3 className="font-sans text-sm text-foreground mb-2 leading-relaxed flex-1">{product.name}</h3>
+                    
+                    <div className="flex items-center justify-center gap-3 mb-6">
                       {product.originalPrice && (
-                        <span className="text-muted-foreground line-through text-sm">${Number(product.originalPrice).toLocaleString()}</span>
+                        <span className="text-muted-foreground line-through text-sm">{product.originalPrice}</span>
                       )}
-                      <span className="font-serif text-lg font-medium text-destructive">${Number(product.price).toLocaleString()}</span>
+                      <span className="font-serif text-lg font-medium text-destructive">{product.price}</span>
                     </div>
+                    
+                    <Button 
+                      className="w-full mt-auto rounded-none bg-foreground text-background hover:bg-primary uppercase tracking-widest text-[11px] h-11 transition-colors"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleAddToCart(product.id);
+                      }}
+                      disabled={addToCartMutation.isPending}
+                      data-testid={`button-quick-add-${product.id}`}
+                    >
+                      Add to Cart
+                    </Button>
                   </div>
                 </div>
               ))}
@@ -362,18 +336,17 @@ export default function Home() {
         </section>
 
         {/* NEWSLETTER */}
-        <section className="py-24 bg-card border-y border-border">
-          <div className="container mx-auto px-4 max-w-3xl text-center">
-            <Diamond className="w-12 h-12 text-primary mx-auto mb-6" strokeWidth={1} />
-            <h2 className="font-serif text-3xl md:text-4xl mb-4">Join the Gold Palace Insider</h2>
-            <p className="text-muted-foreground mb-10">
-              Subscribe to receive exclusive access to new heirloom arrivals, private sales, and the jewelry care guide.
+        <section className="py-24 bg-muted/50 border-t border-border">
+          <div className="container mx-auto px-4 max-w-2xl text-center">
+            <h2 className="font-serif text-3xl md:text-4xl mb-4 text-foreground">Join Our Mailing List</h2>
+            <p className="text-muted-foreground mb-10 text-sm md:text-base">
+              Sign Up for exclusive updates, new arrivals & insider only discounts.
             </p>
-            <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto" onSubmit={handleSubscribe}>
+            <form className="flex flex-col sm:flex-row gap-0 max-w-xl mx-auto" onSubmit={handleSubscribe}>
               <Input 
                 type="email" 
                 placeholder="Enter your email address" 
-                className="h-12 rounded-none border-border bg-background focus-visible:ring-primary text-center sm:text-left"
+                className="h-14 rounded-none border-border bg-card focus-visible:ring-1 focus-visible:ring-primary text-center sm:text-left flex-1"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -381,7 +354,7 @@ export default function Home() {
               />
               <Button 
                 type="submit" 
-                className="h-12 rounded-none bg-secondary hover:bg-primary text-white uppercase tracking-widest text-xs px-8"
+                className="h-14 rounded-none bg-foreground hover:bg-primary text-background uppercase tracking-widest text-xs px-10 w-full sm:w-auto transition-colors"
                 disabled={subscribeMutation.isPending}
                 data-testid="button-newsletter-submit"
               >
@@ -393,6 +366,65 @@ export default function Home() {
       </main>
 
       <Footer />
+
+      {/* FIRST VISIT DISCOUNT POPUP */}
+      <AnimatePresence>
+        {showPopup && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-foreground/60 backdrop-blur-sm p-4"
+          >
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="bg-card w-full max-w-lg border border-border shadow-2xl relative overflow-hidden flex flex-col"
+            >
+              <button 
+                onClick={() => setShowPopup(false)}
+                className="absolute top-4 right-4 p-2 text-muted-foreground hover:text-foreground transition-colors z-20"
+                aria-label="Close"
+              >
+                <X size={20} />
+              </button>
+              
+              <div className="p-10 md:p-14 text-center relative z-10 flex flex-col items-center">
+                <Diamond className="w-10 h-10 text-primary mb-6" strokeWidth={1} />
+                
+                <h3 className="font-serif text-3xl md:text-4xl text-foreground mb-4">Welcome</h3>
+                <p className="text-muted-foreground mb-8 text-sm md:text-base leading-relaxed">
+                  Join the Gold Palace Insider and receive exclusive access to new heirloom arrivals.
+                </p>
+                
+                <div className="bg-muted/50 w-full p-6 border border-border/50 mb-8">
+                  <p className="font-medium text-foreground uppercase tracking-widest text-xs mb-2">Your Exclusive Offer</p>
+                  <p className="font-serif text-2xl text-primary mb-2">Take 20% off your first order</p>
+                  <p className="text-sm text-muted-foreground font-mono bg-background py-2 border border-border/30 inline-block px-4">
+                    Use code: <strong className="text-foreground">CODESALE20</strong>
+                  </p>
+                </div>
+                
+                <Button 
+                  onClick={() => setShowPopup(false)}
+                  className="w-full h-12 rounded-none bg-foreground hover:bg-primary text-background uppercase tracking-widest text-xs transition-colors"
+                >
+                  Continue Shopping
+                </Button>
+              </div>
+              
+              {/* Decorative corners */}
+              <div className="absolute top-0 left-0 w-12 h-12 border-t border-l border-primary/30 m-4 pointer-events-none"></div>
+              <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-primary/30 m-4 pointer-events-none"></div>
+              <div className="absolute bottom-0 left-0 w-12 h-12 border-b border-l border-primary/30 m-4 pointer-events-none"></div>
+              <div className="absolute bottom-0 right-0 w-12 h-12 border-b border-r border-primary/30 m-4 pointer-events-none"></div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }

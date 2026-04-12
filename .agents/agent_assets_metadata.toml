@@ -60,6 +60,12 @@ uri = "file://artifacts/gold-palace/public/images/prod-3.png"
 type = "image"
 title = "Diamond gold ring"
 
+[[generated]]
+id = "f-_zhR0GzSZcheMXEgltf"
+uri = "file://artifacts/gold-palace/public/images/hero-bright.png"
+type = "image"
+title = "Luxurious 22K gold jewelry on cream silk"
+
 [[outputs]]
 id = "9_BP5_umZ7Fa5DMk4LNqF"
 uri = "file://artifacts/gold-palace/public/images/prod-4.jpg"

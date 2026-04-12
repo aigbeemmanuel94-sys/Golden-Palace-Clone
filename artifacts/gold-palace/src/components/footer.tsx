@@ -1,29 +1,31 @@
-import React from "react";
 import { Link } from "wouter";
 import { Facebook, Instagram, Youtube } from "lucide-react";
-import { SiPinterest } from "react-icons/si";
+import { SiPinterest, SiX } from "react-icons/si";
 
 export function Footer() {
   return (
     <footer className="bg-secondary text-secondary-foreground pt-20 pb-10 border-t border-border/10">
-      <div className="container mx-auto px-4 md:px-6">
+      <div className="container mx-auto px-4 md:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           <div className="md:col-span-1">
-            <h2 className="font-serif text-2xl text-primary mb-6">GOLD PALACE</h2>
+            <h2 className="font-serif text-2xl text-primary mb-6">Gold Palace</h2>
             <p className="text-sm text-secondary-foreground/70 mb-6 leading-relaxed">
-              One of the world's oldest online jewelry shops, offering masterful craftsmanship and heirloom-quality 22K and 18K gold and diamond jewelry since 1921.
+              World's First 22k Gold Jewelry Online Store. Trusted since 1994, we specialize in curating heirloom investment-grade 22K gold and diamond jewelry.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="w-10 h-10 rounded-full border border-secondary-foreground/20 flex items-center justify-center hover:bg-primary hover:border-primary hover:text-primary-foreground transition-all">
+              <a href="#" className="w-10 h-10 rounded-full border border-secondary-foreground/20 flex items-center justify-center hover:bg-primary hover:border-primary hover:text-white transition-all">
                 <Facebook size={18} />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full border border-secondary-foreground/20 flex items-center justify-center hover:bg-primary hover:border-primary hover:text-primary-foreground transition-all">
+              <a href="#" className="w-10 h-10 rounded-full border border-secondary-foreground/20 flex items-center justify-center hover:bg-primary hover:border-primary hover:text-white transition-all">
                 <Instagram size={18} />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full border border-secondary-foreground/20 flex items-center justify-center hover:bg-primary hover:border-primary hover:text-primary-foreground transition-all">
+              <a href="#" className="w-10 h-10 rounded-full border border-secondary-foreground/20 flex items-center justify-center hover:bg-primary hover:border-primary hover:text-white transition-all">
                 <SiPinterest size={18} />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full border border-secondary-foreground/20 flex items-center justify-center hover:bg-primary hover:border-primary hover:text-primary-foreground transition-all">
+              <a href="#" className="w-10 h-10 rounded-full border border-secondary-foreground/20 flex items-center justify-center hover:bg-primary hover:border-primary hover:text-white transition-all">
+                <SiX size={16} />
+              </a>
+              <a href="#" className="w-10 h-10 rounded-full border border-secondary-foreground/20 flex items-center justify-center hover:bg-primary hover:border-primary hover:text-white transition-all">
                 <Youtube size={18} />
               </a>
             </div>

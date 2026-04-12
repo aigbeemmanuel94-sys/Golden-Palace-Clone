@@ -1,0 +1,38 @@
+I have a Replit web app that is currently a basic “Gold Palace Jewelry” site (it shows header “Gold Palace Jewelry”, “GOLD PALACE Est. 1921”, some promotional text, product grids with $NaN prices, sections like New Arrivals and Trending Diamonds, and a footer note saying it’s a temporary development preview).
+Please completely redesign and rewrite the entire frontend (HTML, CSS, JavaScript) so that it looks and functions as close as possible to the legitimate website at https://goldpalace.com/.
+Key requirements for the new design:
+•  Header / Top Bar:
+	•  Logo or main title: “Gold Palace” with tagline “World’s First 22k Gold Jewelry Online Store (Since 1994)”
+	•  Promotional banner: “10% OFF GOLD & DIAMOND JEWELRY - IWD2026” (or similar current promotion)
+	•  Navigation menu with categories: Rings, Earrings, Mangalsutra, Necklace, Bracelet, Chain, Pendant
+	•  Include a cart icon showing “Shopping Cart 0 items”
+•  Hero / Main Section:
+	•  Elegant luxury feel with gold accents
+	•  Prominent headline: “One of the World’s Oldest Online Jewelry Shops”
+	•  Supporting text about being early online jewelry store, master artisans, heirloom quality, 100% authentic 22K gold and diamonds
+	•  Buttons: “Shop 22K Gold”, “Shop Diamonds”, “New Arrivals”
+•  Product Sections (use a clean responsive grid):
+	•  New Arrivals section with product cards
+		•  Each card: high-quality jewelry image placeholder (use unsplash or placeholder.co images of gold jewelry for now), product title (e.g. “22K Yellow Gold Classy Medium Pendant”), gold weight mention, price (e.g. $566.12), and “Add to Cart” button
+	•  Trending Now section with discounted items
+		•  Show original price struck through, sale price, discount % (e.g. -25%)
+		•  Examples: 18K gold + diamond mangalsutra, studs, etc.
+•  Additional Sections:
+	•  “Expertly Crafted by Master Artisans”
+	•  “Guaranteed 100% Authentic”
+	•  “Join Our Mailing List” / newsletter signup with text: “Sign Up for exclusive updates, new arrivals & insider only discounts”
+•  Promotions:
+	•  Pop-up or banner: “Take 20% off your first order with code SALE20” (or CODESALE20)
+•  Footer:
+	•  Social media icons (Facebook, Instagram, Pinterest, YouTube, Twitter)
+	•  Links to categories, about info, newsletter again
+	•  Clean, elegant layout
+Overall style:
+•  Luxury, minimalist, elegant jewelry store vibe
+•  Gold/cream/white color scheme with black text for contrast
+•  High-quality product images (use placeholders if needed)
+•  Fully responsive (mobile-friendly)
+•  Smooth, modern CSS (Tailwind CSS is fine if you want to add it, or plain modern CSS)
+•  Keep it as a single HTML file with embedded CSS and JS for easy Replit deployment
+Replace all placeholder “$NaN” prices with realistic example prices. Make the site look professional and trustworthy like the real goldpalace.com. Remove any “temporary development preview” or Replit banners.
+Generate the complete updated index.html code (with <style> and <script> sections) that I can directly replace in my Replit project.

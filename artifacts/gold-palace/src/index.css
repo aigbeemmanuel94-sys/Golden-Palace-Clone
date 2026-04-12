@@ -70,48 +70,46 @@
   --elevate-1: rgba(26, 18, 8, 0.03);
   --elevate-2: rgba(26, 18, 8, 0.08);
 
-  /* Cream Backgrounds */
-  --background: 37 72% 96%; /* #FDF8F0 */
-  --foreground: 33 53% 6%; /* #1A1208 */
+  /* Cream/White/Gold Palette */
+  --background: 40 30% 98%; /* warm white/cream */
+  --foreground: 25 20% 15%; /* dark charcoal */
 
   --border: 44 20% 85%; /* Soft goldish border */
   
-  --card: 37 46% 91%; /* #F3EBE0 */
-  --card-foreground: 33 53% 6%;
+  --card: 0 0% 100%; /* white */
+  --card-foreground: 25 20% 15%;
   --card-border: 44 20% 85%;
 
-  --popover: 37 72% 96%;
-  --popover-foreground: 33 53% 6%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 25 20% 15%;
   --popover-border: 44 20% 85%;
 
-  /* Gold Palace Primary - Deep Warm Gold */
-  --primary: 44 55% 54%; /* #C9A84C */
-  --primary-foreground: 33 60% 4%; /* Near black */
+  --primary: 42 75% 50%; /* gold */
+  --primary-foreground: 0 0% 100%; /* white */
 
-  /* Dark Charcoal Secondary */
-  --secondary: 33 53% 6%; /* #1A1208 */
-  --secondary-foreground: 37 72% 96%; /* Cream */
+  --secondary: 220 20% 15%; /* dark navy/charcoal */
+  --secondary-foreground: 40 30% 98%; /* Cream */
 
-  --muted: 37 46% 91%;
-  --muted-foreground: 33 20% 40%;
+  --muted: 40 20% 94%; /* light cream */
+  --muted-foreground: 25 10% 40%;
 
-  --accent: 44 55% 54%;
-  --accent-foreground: 33 60% 4%;
+  --accent: 42 75% 50%;
+  --accent-foreground: 0 0% 100%;
 
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
 
   --input: 44 20% 85%;
-  --ring: 44 55% 54%;
+  --ring: 42 75% 50%;
 
-  --sidebar: 37 72% 96%;
-  --sidebar-foreground: 33 53% 6%;
+  --sidebar: 40 30% 98%;
+  --sidebar-foreground: 25 20% 15%;
   --sidebar-border: 44 20% 85%;
-  --sidebar-primary: 44 55% 54%;
-  --sidebar-primary-foreground: 33 60% 4%;
-  --sidebar-accent: 37 46% 91%;
-  --sidebar-accent-foreground: 33 53% 6%;
-  --sidebar-ring: 44 55% 54%;
+  --sidebar-primary: 42 75% 50%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 40 20% 94%;
+  --sidebar-accent-foreground: 25 20% 15%;
+  --sidebar-ring: 42 75% 50%;
 
   --app-font-sans: 'Lato', sans-serif;
   --app-font-serif: 'Playfair Display', serif;
@@ -154,45 +152,45 @@
   --elevate-1: rgba(253, 248, 240, 0.04);
   --elevate-2: rgba(253, 248, 240, 0.09);
 
-  --background: 33 60% 4%; /* #0F0A04 - Deepest Charcoal */
-  --foreground: 37 72% 96%; /* #FDF8F0 */
+  --background: 220 20% 15%;
+  --foreground: 40 30% 98%;
 
   --border: 33 20% 20%;
   
-  --card: 33 53% 6%; /* #1A1208 */
-  --card-foreground: 37 72% 96%;
+  --card: 220 20% 12%;
+  --card-foreground: 40 30% 98%;
   --card-border: 33 20% 20%;
 
-  --popover: 33 53% 6%;
-  --popover-foreground: 37 72% 96%;
+  --popover: 220 20% 12%;
+  --popover-foreground: 40 30% 98%;
   --popover-border: 33 20% 20%;
 
-  --primary: 44 55% 54%; /* #C9A84C */
-  --primary-foreground: 33 60% 4%;
+  --primary: 42 75% 50%;
+  --primary-foreground: 0 0% 100%;
 
-  --secondary: 37 72% 96%; /* Cream */
-  --secondary-foreground: 33 53% 6%;
+  --secondary: 40 30% 98%;
+  --secondary-foreground: 220 20% 15%;
 
-  --muted: 33 30% 12%;
-  --muted-foreground: 37 20% 70%;
+  --muted: 220 20% 20%;
+  --muted-foreground: 40 20% 70%;
 
-  --accent: 44 55% 54%;
-  --accent-foreground: 33 60% 4%;
+  --accent: 42 75% 50%;
+  --accent-foreground: 0 0% 100%;
 
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
 
   --input: 33 20% 20%;
-  --ring: 44 55% 54%;
+  --ring: 42 75% 50%;
 
-  --sidebar: 33 60% 4%;
-  --sidebar-foreground: 37 72% 96%;
+  --sidebar: 220 20% 15%;
+  --sidebar-foreground: 40 30% 98%;
   --sidebar-border: 33 20% 20%;
-  --sidebar-primary: 44 55% 54%;
-  --sidebar-primary-foreground: 33 60% 4%;
-  --sidebar-accent: 33 30% 12%;
-  --sidebar-accent-foreground: 37 72% 96%;
-  --sidebar-ring: 44 55% 54%;
+  --sidebar-primary: 42 75% 50%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 220 20% 20%;
+  --sidebar-accent-foreground: 40 30% 98%;
+  --sidebar-ring: 42 75% 50%;
 
   --shadow-2xs: 0px 2px 0px 0px rgba(0,0,0,0.5);
   --shadow-xs: 0px 2px 0px 0px rgba(0,0,0,0.5);

@@ -1,13 +1,96 @@
-import React from "react";
-import { Link } from "wouter";
+import React, { useState } from "react";
+import { Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, ShieldCheck, Diamond, Gem, Award } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
+import { 
+  useListCategories, 
+  getListCategoriesQueryKey,
+  useListProducts,
+  getListProductsQueryKey,
+  useSubscribeNewsletter,
+  useGetMe,
+  getGetMeQueryKey,
+  useAddToCart,
+  getGetCartQueryKey
+} from "@workspace/api-client-react";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Home() {
+  const [, setLocation] = useLocation();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [email, setEmail] = useState("");
+
+  const { data: user } = useGetMe({ query: { queryKey: getGetMeQueryKey() } });
+  
+  const { data: categories, isLoading: isLoadingCategories } = useListCategories({
+    query: { queryKey: getListCategoriesQueryKey() }
+  });
+
+  const { data: newArrivals, isLoading: isLoadingNewArrivals } = useListProducts(
+    { isNewArrival: true },
+    { query: { queryKey: getListProductsQueryKey({ isNewArrival: true }) } }
+  );
+
+  const { data: trending, isLoading: isLoadingTrending } = useListProducts(
+    { isTrending: true },
+    { query: { queryKey: getListProductsQueryKey({ isTrending: true }) } }
+  );
+
+  const subscribeMutation = useSubscribeNewsletter();
+  const addToCartMutation = useAddToCart();
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    
+    subscribeMutation.mutate(
+      { data: { email } },
+      {
+        onSuccess: () => {
+          toast({
+            title: "Subscribed Successfully",
+            description: "Welcome to the Gold Palace Insider.",
+          });
+          setEmail("");
+        },
+        onError: (error: any) => {
+          toast({
+            variant: "destructive",
+            title: "Subscription Failed",
+            description: error?.response?.data?.error || "Please try again later.",
+          });
+        }
+      }
+    );
+  };
+
+  const handleAddToCart = (productId: number) => {
+    if (!user) {
+      setLocation("/login");
+      return;
+    }
+
+    addToCartMutation.mutate(
+      { data: { productId, quantity: 1 } },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: getGetCartQueryKey() });
+          toast({
+            title: "Added to Cart",
+            description: "Item has been added to your shopping bag.",
+          });
+        }
+      }
+    );
+  };
+
   const fadeInUp = {
     hidden: { opacity: 0, y: 40 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
@@ -22,28 +105,6 @@ export default function Home() {
       }
     }
   };
-
-  const categories = [
-    { name: "Rings", image: "/images/cat-ring.png" },
-    { name: "Earrings", image: "/images/cat-earrings.png" },
-    { name: "Mangalsutra", image: "/images/cat-mangalsutra.png" },
-    { name: "Necklace", image: "/images/cat-necklace.png" },
-    { name: "Bracelet", image: "/images/cat-bracelet.png" },
-  ];
-
-  const newArrivals = [
-    { id: 1, name: "22K Gold Filigree Pendant", price: "$566", image: "/images/prod-1.png" },
-    { id: 2, name: "Traditional 22K Gold Chain", price: "$1,397", image: "/images/prod-2.png" },
-    { id: 3, name: "Heavy 22K Gold Bangles", price: "$2,850", image: "/images/prod-5.png" },
-    { id: 4, name: "Mens 22K Gold Curb Chain", price: "$1,920", image: "/images/prod-9.png" },
-  ];
-
-  const trending = [
-    { id: 1, name: "18K Gold Diamond Ring", originalPrice: "$3,200", salePrice: "$2,400", discount: "25% OFF", image: "/images/prod-3.png" },
-    { id: 2, name: "Diamond Stud Earrings", originalPrice: "$1,800", salePrice: "$1,530", discount: "15% OFF", image: "/images/prod-4.png" },
-    { id: 3, name: "Emerald & Diamond Ring", originalPrice: "$4,500", salePrice: "$3,600", discount: "20% OFF", image: "/images/prod-6.png" },
-    { id: 4, name: "Ruby & Diamond Pendant", originalPrice: "$2,100", salePrice: "$1,680", discount: "20% OFF", image: "/images/prod-7.png" },
-  ];
 
   return (
     <div className="min-h-screen bg-background flex flex-col font-sans">
@@ -126,14 +187,23 @@ export default function Home() {
             </div>
 
             <div className="flex overflow-x-auto pb-8 -mx-4 px-4 gap-6 snap-x snap-mandatory scrollbar-hide md:grid md:grid-cols-5 md:overflow-visible md:pb-0 md:px-0">
-              {categories.map((cat, idx) => (
-                <Link key={idx} href={`/category/${cat.name.toLowerCase()}`} className="snap-center shrink-0 w-[70vw] md:w-auto group cursor-pointer">
+              {isLoadingCategories ? (
+                Array(5).fill(0).map((_, i) => (
+                  <div key={i} className="snap-center shrink-0 w-[70vw] md:w-auto">
+                    <Skeleton className="w-full aspect-square mb-4 rounded-none" />
+                    <Skeleton className="h-6 w-24 mx-auto" />
+                  </div>
+                ))
+              ) : categories?.map((cat) => (
+                <Link key={cat.id} href={`/category/${cat.slug}`} className="snap-center shrink-0 w-[70vw] md:w-auto group cursor-pointer" data-testid={`link-category-${cat.id}`}>
                   <div className="relative overflow-hidden aspect-square mb-4 bg-card">
-                    <img 
-                      src={cat.image} 
-                      alt={cat.name} 
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
+                    {cat.imageUrl && (
+                      <img 
+                        src={cat.imageUrl} 
+                        alt={cat.name} 
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                    )}
                     <div className="absolute inset-0 bg-secondary/10 group-hover:bg-transparent transition-colors duration-500"></div>
                   </div>
                   <h3 className="font-serif text-xl text-center text-foreground group-hover:text-primary transition-colors">{cat.name}</h3>
@@ -176,17 +246,46 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {newArrivals.map((product) => (
-                <div key={product.id} className="group cursor-pointer bg-background p-4 border border-border/50 hover:border-primary/30 transition-colors">
+              {isLoadingNewArrivals ? (
+                Array(4).fill(0).map((_, i) => (
+                  <div key={i} className="p-4 border border-border/50">
+                    <Skeleton className="w-full aspect-square mb-6 rounded-none" />
+                    <Skeleton className="h-4 w-3/4 mb-2" />
+                    <Skeleton className="h-6 w-1/4" />
+                  </div>
+                ))
+              ) : newArrivals?.map((product) => (
+                <div key={product.id} className="group cursor-pointer bg-background p-4 border border-border/50 hover:border-primary/30 transition-colors flex flex-col h-full" data-testid={`product-card-${product.id}`}>
                   <div className="relative aspect-square overflow-hidden mb-6 bg-card">
+                    {product.badge && (
+                      <span className="absolute top-4 left-4 z-10 bg-primary text-primary-foreground text-[10px] font-bold px-2 py-1 uppercase tracking-wider">
+                        {product.badge}
+                      </span>
+                    )}
                     <img 
-                      src={product.image} 
+                      src={product.imageUrl} 
                       alt={product.name} 
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                   </div>
-                  <h3 className="font-sans text-sm tracking-wide text-foreground mb-2 group-hover:text-primary transition-colors">{product.name}</h3>
-                  <p className="font-serif text-lg font-medium">{product.price}</p>
+                  <h3 className="font-sans text-sm tracking-wide text-foreground mb-2 group-hover:text-primary transition-colors flex-1">{product.name}</h3>
+                  <div className="flex items-center justify-between mt-auto pt-4">
+                    <p className="font-serif text-lg font-medium">${Number(product.price).toLocaleString()}</p>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="rounded-none border-border hover:bg-primary hover:text-primary-foreground hover:border-primary uppercase tracking-widest text-[10px] h-8"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleAddToCart(product.id);
+                      }}
+                      disabled={addToCartMutation.isPending}
+                      data-testid={`button-add-to-cart-${product.id}`}
+                    >
+                      Add to Cart
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -209,19 +308,40 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {trending.map((product) => (
-                <div key={product.id} className="group cursor-pointer">
+              {isLoadingTrending ? (
+                Array(4).fill(0).map((_, i) => (
+                  <div key={i}>
+                    <Skeleton className="w-full aspect-square mb-6 rounded-none" />
+                    <div className="flex flex-col items-center">
+                      <Skeleton className="h-4 w-3/4 mb-2" />
+                      <Skeleton className="h-6 w-1/2" />
+                    </div>
+                  </div>
+                ))
+              ) : trending?.map((product) => (
+                <div key={product.id} className="group cursor-pointer" data-testid={`product-card-${product.id}`}>
                   <div className="relative aspect-square overflow-hidden mb-6 bg-card border border-border/50">
-                    <span className="absolute top-4 left-4 z-10 bg-destructive text-destructive-foreground text-[10px] font-bold px-2 py-1 uppercase tracking-wider">
-                      {product.discount}
-                    </span>
+                    {product.badge && (
+                      <span className="absolute top-4 left-4 z-10 bg-destructive text-destructive-foreground text-[10px] font-bold px-2 py-1 uppercase tracking-wider">
+                        {product.badge}
+                      </span>
+                    )}
                     <img 
-                      src={product.image} 
+                      src={product.imageUrl} 
                       alt={product.name} 
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                     <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-background/90 backdrop-blur-sm">
-                      <Button className="w-full rounded-none bg-secondary hover:bg-primary text-white">
+                      <Button 
+                        className="w-full rounded-none bg-secondary hover:bg-primary text-white"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleAddToCart(product.id);
+                        }}
+                        disabled={addToCartMutation.isPending}
+                        data-testid={`button-quick-add-${product.id}`}
+                      >
                         Quick Add
                       </Button>
                     </div>
@@ -229,8 +349,10 @@ export default function Home() {
                   <div className="text-center">
                     <h3 className="font-sans text-sm tracking-wide text-foreground mb-2">{product.name}</h3>
                     <div className="flex items-center justify-center gap-3">
-                      <span className="text-muted-foreground line-through text-sm">{product.originalPrice}</span>
-                      <span className="font-serif text-lg font-medium text-destructive">{product.salePrice}</span>
+                      {product.originalPrice && (
+                        <span className="text-muted-foreground line-through text-sm">${Number(product.originalPrice).toLocaleString()}</span>
+                      )}
+                      <span className="font-serif text-lg font-medium text-destructive">${Number(product.price).toLocaleString()}</span>
                     </div>
                   </div>
                 </div>
@@ -247,15 +369,23 @@ export default function Home() {
             <p className="text-muted-foreground mb-10">
               Subscribe to receive exclusive access to new heirloom arrivals, private sales, and the jewelry care guide.
             </p>
-            <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto" onSubmit={(e) => e.preventDefault()}>
+            <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto" onSubmit={handleSubscribe}>
               <Input 
                 type="email" 
                 placeholder="Enter your email address" 
                 className="h-12 rounded-none border-border bg-background focus-visible:ring-primary text-center sm:text-left"
                 required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                data-testid="input-newsletter-email"
               />
-              <Button type="submit" className="h-12 rounded-none bg-secondary hover:bg-primary text-white uppercase tracking-widest text-xs px-8">
-                Subscribe
+              <Button 
+                type="submit" 
+                className="h-12 rounded-none bg-secondary hover:bg-primary text-white uppercase tracking-widest text-xs px-8"
+                disabled={subscribeMutation.isPending}
+                data-testid="button-newsletter-submit"
+              >
+                {subscribeMutation.isPending ? "..." : "Subscribe"}
               </Button>
             </form>
           </div>

@@ -15,6 +15,7 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - **Validation**: Zod (`zod/v4`), `drizzle-zod`
 - **API codegen**: Orval (from OpenAPI spec)
 - **Build**: esbuild (CJS bundle)
+- **Auth**: express-session + bcryptjs (server-side sessions, stored in PostgreSQL)
 
 ## Key Commands
 
@@ -24,23 +25,51 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
 - `pnpm --filter @workspace/api-server run dev` — run API server locally
 
-See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details.
-
 ## Artifacts
 
 ### Gold Palace Jewelry (`artifacts/gold-palace`)
-- **Type**: react-vite (presentation-first, no backend)
+- **Type**: react-vite (full-stack with backend)
 - **Preview path**: `/`
+- **API path**: `/api`
 - **Description**: Luxury Indian gold and diamond jewelry e-commerce website
-- **Features**:
-  - Hero section with promotional banner (full-bleed luxury photography)
-  - Product category navigation (Rings, Earrings, Mangalsutra, Necklace, Bracelet, Chain, Pendant)
-  - New Arrivals product grid (22K gold items)
-  - Trending Diamonds sale grid (with original + discounted prices)
-  - Trust badges (Heritage, Craftsmanship, Authenticity)
-  - Newsletter signup
-  - Social media footer
-  - Fixed navbar with scroll effect
-  - Framer Motion animations
+
+### Features
+- Full user authentication (register with email/password, login, logout)
+- Email addresses stored securely in PostgreSQL (bcrypt hashed passwords)
+- Product listings from DB (new arrivals + trending with sale prices)
+- Category navigation (Rings, Earrings, Mangalsutra, Necklace, Bracelet, Chain, Pendant)
+- Cart system (add/update/remove items, per user)
+- Newsletter subscription (stored email addresses)
+- Session-based auth (30-day cookies)
+
+### Pages
+- `/` — Home (hero, categories, new arrivals, trending, trust badges, newsletter)
+- `/login` — Login form
+- `/register` — Register form (first name, last name, email, password)
+
+### Database Tables
+- `users` — id, email, password_hash, first_name, last_name, created_at
+- `categories` — id, name, slug, image_url
+- `products` — id, name, description, price, original_price, image_url, category, is_new_arrival, is_trending, badge, weight
+- `cart_items` — id, user_id, product_id, quantity
+- `newsletter_subscribers` — id, email, created_at
+- `session` — express-session PostgreSQL store
+
+### API Endpoints
+- `POST /api/auth/register` — creates user, starts session
+- `POST /api/auth/login` — authenticates, starts session
+- `POST /api/auth/logout` — destroys session
+- `GET /api/auth/me` — returns current user
+- `GET /api/products?isNewArrival=true&isTrending=true` — list products
+- `GET /api/products/:id` — get single product
+- `GET /api/categories` — list categories
+- `GET /api/cart` — get cart (auth required)
+- `POST /api/cart/items` — add to cart (auth required)
+- `PATCH /api/cart/items/:id` — update quantity (auth required)
+- `DELETE /api/cart/items/:id` — remove from cart (auth required)
+- `POST /api/newsletter/subscribe` — subscribe email
+
+### Design
 - **Fonts**: Playfair Display (serif headings) + Lato (body)
-- **Color palette**: Deep warm gold, cream ivory backgrounds, rich charcoal text
+- **Color palette**: Deep warm gold (#C9A84C), cream ivory backgrounds, rich charcoal text
+- **Animations**: Framer Motion scroll reveals, product card hover effects

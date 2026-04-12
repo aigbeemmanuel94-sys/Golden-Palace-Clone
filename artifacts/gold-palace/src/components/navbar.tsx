@@ -1,11 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "wouter";
-import { Search, ShoppingBag, User, Menu, X } from "lucide-react";
+import { Search, ShoppingBag, User, Menu, X, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useGetMe, useLogout, useGetCart, getGetMeQueryKey, getGetCartQueryKey } from "@workspace/api-client-react";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const queryClient = useQueryClient();
+
+  const { data: user } = useGetMe({ query: { queryKey: getGetMeQueryKey() } });
+  const { data: cart } = useGetCart({ query: { queryKey: getGetCartQueryKey(), enabled: !!user } });
+  const logoutMutation = useLogout();
+
+  const handleLogout = () => {
+    logoutMutation.mutate(undefined, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: getGetMeQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetCartQueryKey() });
+      }
+    });
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -69,14 +85,33 @@ export function Navbar() {
             <button className="text-foreground hover:text-primary transition-colors p-2" data-testid="button-search">
               <Search size={20} />
             </button>
-            <Link href="/login" className="hidden md:block text-foreground hover:text-primary transition-colors p-2" data-testid="link-login">
-              <User size={20} />
-            </Link>
+            
+            {user ? (
+              <div className="hidden md:flex items-center gap-4">
+                <span className="text-sm font-serif italic text-muted-foreground">Hello, {user.firstName}</span>
+                <button 
+                  onClick={handleLogout}
+                  className="text-foreground hover:text-primary transition-colors p-2" 
+                  title="Sign Out"
+                  disabled={logoutMutation.isPending}
+                  data-testid="button-logout"
+                >
+                  <LogOut size={20} />
+                </button>
+              </div>
+            ) : (
+              <Link href="/login" className="hidden md:block text-foreground hover:text-primary transition-colors p-2" data-testid="link-login">
+                <User size={20} />
+              </Link>
+            )}
+            
             <button className="text-foreground hover:text-primary transition-colors relative p-2" data-testid="button-cart">
               <ShoppingBag size={20} />
-              <span className="absolute top-0 right-0 bg-primary text-primary-foreground text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                2
-              </span>
+              {user && cart && cart.length > 0 && (
+                <span className="absolute top-0 right-0 bg-primary text-primary-foreground text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                  {cart.length}
+                </span>
+              )}
             </button>
           </div>
         </div>
@@ -97,9 +132,15 @@ export function Navbar() {
           <Link href="#about" className="text-sm font-medium tracking-widest uppercase p-2 border-b border-border">
             Heritage
           </Link>
-          <Link href="/login" className="text-sm font-medium tracking-widest uppercase p-2">
-            Login / Register
-          </Link>
+          {user ? (
+            <button onClick={handleLogout} disabled={logoutMutation.isPending} className="text-sm font-medium tracking-widest uppercase p-2 text-left" data-testid="mobile-button-logout">
+              Sign Out
+            </button>
+          ) : (
+            <Link href="/login" className="text-sm font-medium tracking-widest uppercase p-2" data-testid="mobile-link-login">
+              Login / Register
+            </Link>
+          )}
         </div>
       )}
     </header>

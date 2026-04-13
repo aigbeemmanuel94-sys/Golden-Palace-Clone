@@ -12,15 +12,21 @@ const content: Record<string, { title: string; subtitle: string; body: React.Rea
       <div className="space-y-8">
         <div className="grid md:grid-cols-3 gap-6">
           {[
-            { label: "Email Support", value: "support@goldpalace.com", note: "Replies within 4 hours" },
-            { label: "WhatsApp", value: "+1 (800) 465-3789", note: "Mon–Sat, 9am–7pm IST" },
-            { label: "International", value: "+91 40 6666 7777", note: "Available globally" },
+            { label: "Email Support", value: "support@goldpalace.com", note: "Replies within 4 hours", href: "mailto:support@goldpalace.com" },
+            { label: "WhatsApp", value: "+1 (800) 465-3789", note: "Mon–Sat, 9am–7pm IST", href: "tel:+18004653789" },
+            { label: "Facebook", value: "Gold Palace on Facebook", note: "Message us directly", href: "https://www.facebook.com/share/1KaQGPajfT/?mibextid=wwXIfr" },
           ].map((c) => (
-            <div key={c.label} className="bg-card border border-border p-6">
+            <a
+              key={c.label}
+              href={c.href}
+              target={c.href?.startsWith("http") ? "_blank" : undefined}
+              rel={c.href?.startsWith("http") ? "noopener noreferrer" : undefined}
+              className="bg-card border border-border p-6 block hover:border-primary transition-colors group"
+            >
               <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">{c.label}</p>
-              <p className="font-serif text-lg text-primary mb-1">{c.value}</p>
+              <p className="font-serif text-lg text-primary mb-1 group-hover:underline">{c.value}</p>
               <p className="text-xs text-muted-foreground">{c.note}</p>
-            </div>
+            </a>
           ))}
         </div>
         <div className="bg-card border border-border p-8">

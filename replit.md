@@ -54,12 +54,20 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - `/blog`, `/press` — Editorial pages
 - `/privacy`, `/terms` — Legal pages
 
+### Admin Dashboard
+- URL: `/admin` — protected, redirects non-admin users to homepage
+- Admin credentials: `admin@goldpalace.com` / `goldpalace@admin2024`
+- Tabs: Overview stats, Users list, Orders & transactions, Activity log, Newsletter subscribers
+- Activity is logged automatically on every login, signup, logout, and failed login attempt
+
 ### Database Tables
-- `users` — id, email, password_hash, first_name, last_name, created_at
+- `users` — id, email, password_hash, first_name, last_name, is_admin, created_at
 - `categories` — id, name, slug, image_url
 - `products` — id, name, description, price, original_price, image_url, category, is_new_arrival, is_trending, badge, weight
 - `cart_items` — id, user_id, product_id, quantity
 - `newsletter_subscribers` — id, email, created_at
+- `activity_logs` — id, user_id, action, metadata (jsonb), ip_address, user_agent, created_at
+- `orders` — id, user_id, guest_email, status, items (jsonb), subtotal, shipping_cost, total, shipping_address (jsonb), payment_method, transaction_id, created_at, updated_at
 - `session` — express-session PostgreSQL store
 
 ### API Endpoints

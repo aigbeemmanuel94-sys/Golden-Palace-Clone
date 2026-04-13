@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import bcrypt from "bcryptjs";
-import { eq } from "drizzle-orm";
-import { db, usersTable } from "@workspace/db";
+import { eq, sql } from "drizzle-orm";
+import { db, usersTable, activityLogsTable } from "@workspace/db";
 import {
   RegisterBody,
   LoginBody,
@@ -14,6 +14,24 @@ declare module "express-session" {
 }
 
 const router: IRouter = Router();
+
+const logActivity = async (
+  userId: number | null,
+  action: string,
+  metadata: Record<string, unknown> | null,
+  req: { ip?: string; headers: Record<string, string | string[] | undefined> }
+) => {
+  try {
+    await db.insert(activityLogsTable).values({
+      userId,
+      action,
+      metadata,
+      ipAddress: req.ip ?? null,
+      userAgent: (req.headers["user-agent"] as string) ?? null,
+    });
+  } catch {
+  }
+};
 
 router.post("/auth/register", async (req, res): Promise<void> => {
   const parsed = RegisterBody.safeParse(req.body);
@@ -48,11 +66,14 @@ router.post("/auth/register", async (req, res): Promise<void> => {
 
   req.session.userId = user.id;
 
+  await logActivity(user.id, "signup", { email: user.email, firstName, lastName }, req);
+
   res.status(201).json({
     id: user.id,
     email: user.email,
     firstName: user.firstName,
     lastName: user.lastName,
+    isAdmin: user.isAdmin,
     createdAt: user.createdAt,
   });
 });
@@ -78,22 +99,30 @@ router.post("/auth/login", async (req, res): Promise<void> => {
 
   const valid = await bcrypt.compare(password, user.passwordHash);
   if (!valid) {
+    await logActivity(null, "failed_login", { email }, req);
     res.status(401).json({ error: "Invalid email or password" });
     return;
   }
 
   req.session.userId = user.id;
 
+  await logActivity(user.id, "login", { email: user.email }, req);
+
   res.json({
     id: user.id,
     email: user.email,
     firstName: user.firstName,
     lastName: user.lastName,
+    isAdmin: user.isAdmin,
     createdAt: user.createdAt,
   });
 });
 
 router.post("/auth/logout", async (req, res): Promise<void> => {
+  const userId = req.session.userId ?? null;
+  if (userId) {
+    await logActivity(userId, "logout", null, req);
+  }
   req.session.destroy((err) => {
     if (err) {
       res.status(500).json({ error: "Failed to logout" });
@@ -126,6 +155,7 @@ router.get("/auth/me", async (req, res): Promise<void> => {
     email: user.email,
     firstName: user.firstName,
     lastName: user.lastName,
+    isAdmin: user.isAdmin,
     createdAt: user.createdAt,
   });
 });

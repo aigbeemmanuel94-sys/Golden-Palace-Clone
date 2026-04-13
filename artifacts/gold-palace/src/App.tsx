@@ -11,6 +11,7 @@ import AccountPage from "@/pages/account";
 import AboutPage from "@/pages/about";
 import CraftsmanshipPage from "@/pages/craftsmanship";
 import InfoPage from "@/pages/info";
+import { AdminPage } from "@/pages/admin";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ function Router() {
       <Route path="/blog" component={InfoPage} />
       <Route path="/press" component={InfoPage} />
       <Route path="/new-arrivals" component={Home} />
+      <Route path="/admin" component={AdminPage} />
       <Route component={NotFound} />
     </Switch>
   );

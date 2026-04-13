@@ -215,9 +215,22 @@ export default function Home() {
                 ))
               ) : categories?.map((cat) => (
                 <Link key={cat.id} href={`/category/${cat.slug}`} className="group cursor-pointer flex flex-col" data-testid={`link-category-${cat.id}`}>
-                  <div className="bg-muted/50 border border-border aspect-[4/5] mb-4 flex items-center justify-center p-6 group-hover:border-primary/50 transition-colors relative overflow-hidden">
-                    <div className="absolute inset-2 border border-border/40 pointer-events-none group-hover:border-primary/20 transition-colors"></div>
-                    <h3 className="font-serif text-lg md:text-xl text-center text-foreground group-hover:text-primary transition-colors z-10">{cat.name}</h3>
+                  <div className="relative aspect-[4/5] mb-3 overflow-hidden border border-border group-hover:border-primary/60 transition-colors">
+                    {cat.imageUrl ? (
+                      <img
+                        src={cat.imageUrl}
+                        alt={cat.name}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-muted/50 flex items-center justify-center">
+                        <span className="font-serif text-2xl text-muted-foreground">{cat.name[0]}</span>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 p-3 text-center">
+                      <h3 className="font-serif text-sm md:text-base text-white group-hover:text-primary transition-colors drop-shadow-sm">{cat.name}</h3>
+                    </div>
                   </div>
                 </Link>
               ))}

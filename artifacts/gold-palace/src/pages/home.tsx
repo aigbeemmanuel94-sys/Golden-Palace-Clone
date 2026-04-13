@@ -153,7 +153,7 @@ export default function Home() {
                     Shop 22K Gold
                   </Button>
                 </Link>
-                <Link href="/category/mangalsutra">
+                <Link href="/category/gold-bar">
                   <Button size="lg" variant="outline" className="border-primary text-foreground hover:bg-primary hover:text-primary-foreground text-sm tracking-widest uppercase h-14 px-10 rounded-none w-full sm:w-auto bg-transparent/50 backdrop-blur-sm">
                     Shop Diamonds
                   </Button>

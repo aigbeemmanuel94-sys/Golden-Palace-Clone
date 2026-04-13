@@ -36,7 +36,7 @@ export function Footer() {
             <ul className="space-y-4">
               <li><Link href="/category/rings" className="text-sm text-secondary-foreground/70 hover:text-primary transition-colors">22K Gold Rings</Link></li>
               <li><Link href="/category/earrings" className="text-sm text-secondary-foreground/70 hover:text-primary transition-colors">Diamond Earrings</Link></li>
-              <li><Link href="/category/mangalsutra" className="text-sm text-secondary-foreground/70 hover:text-primary transition-colors">Traditional Mangalsutra</Link></li>
+              <li><Link href="/category/gold-bar" className="text-sm text-secondary-foreground/70 hover:text-primary transition-colors">Gold Bar</Link></li>
               <li><Link href="/category/chains" className="text-sm text-secondary-foreground/70 hover:text-primary transition-colors">Men's Gold Chains</Link></li>
               <li><Link href="/category/bridal" className="text-sm text-secondary-foreground/70 hover:text-primary transition-colors">Bridal Sets</Link></li>
             </ul>

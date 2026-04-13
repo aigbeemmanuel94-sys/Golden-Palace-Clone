@@ -47,7 +47,7 @@ export function Navbar({ onCartOpen }: NavbarProps = {}) {
   const categories = [
     { name: "Rings", href: "/category/rings" },
     { name: "Earrings", href: "/category/earrings" },
-    { name: "Mangalsutra", href: "/category/mangalsutra" },
+    { name: "Gold Bar", href: "/category/gold-bar" },
     { name: "Necklace", href: "/category/necklace" },
     { name: "Bracelet", href: "/category/bracelet" },
     { name: "Chain", href: "/category/chain" },
@@ -210,7 +210,7 @@ export function Navbar({ onCartOpen }: NavbarProps = {}) {
             <input
               autoFocus
               type="text"
-              placeholder="Search for rings, necklaces, mangalsutra…"
+              placeholder="Search for rings, necklaces, gold bars…"
               className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
             />
             <button onClick={() => setSearchOpen(false)} className="text-muted-foreground hover:text-foreground">

@@ -1,0 +1,39 @@
+I have a Replit jewelry store site (currently at https://golden-palace-clone--mj6268949.replit.app/). It still has "Gold Palace" branding which I will change later.
+
+First, keep the elegant dark luxury gold/cream/black design and layout.
+
+Main tasks:
+
+1. Fix all navigation completely:
+   - Implement JavaScript client-side routing so clicking any menu item (Rings, Earrings, Mangalsutra, Necklace, Bracelet, Chain, Pendant, Our Heritage sub-items like Our Story/Master Craftsmanship, Collections, New Arrivals, Trending Now, Bridal Trousseau, etc.) switches content sections on the same page without any 404 errors or reloads.
+   - Use history.pushState for clean URLs (#home, #rings, #our-story, etc.) and support browser back/forward buttons.
+   - Add a mobile-friendly hamburger menu.
+
+2. Improve Login / Register:
+   - Full functional forms with validation (email format, password match, required fields).
+   - On signup/login, save user data (name, email) to localStorage so it persists on refresh.
+   - After login, header shows "Hi [Name]" and "My Account" + Logout.
+   - "My Account" section includes: editable Profile, Wishlist (add/remove products with heart icons), Order History (shows items from cart with fake dates/totals).
+
+3. Add Working Cart:
+   - "Add to Cart" buttons on all products that update a cart count in the header.
+   - Cart sidebar or modal showing items, quantities, subtotal (persist everything in localStorage).
+   - Simple "Checkout" button that shows a success message (no real payment for now).
+
+4. Enhance Product Sections:
+   - Responsive grids for New Arrivals, Trending, and category pages with realistic 22K gold jewelry examples (titles, gold weights, prices, short descriptions).
+   - Clicking a product opens a modal with larger image and more details.
+   - Use good placeholder images (e.g., https://picsum.photos/id/1015/600/600 or Unsplash gold jewelry links).
+
+5. Add these useful sections/pages via routing:
+   - About / Our Story (placeholder text about craftsmanship and quality).
+   - Size Guide or Jewelry Care.
+   - Contact (simple form that shows success message).
+
+6. Overall:
+   - Keep promotional banners but make text generic for now (10% off, complimentary shipping over $500, 20% first order code).
+   - Smooth transitions and fully responsive design.
+   - Remove any obvious temporary/Replit text.
+   - Generate the complete updated index.html (with embedded CSS and full JavaScript) so I can replace my files.
+
+Make the site feel professional, luxurious, and functional like a real modern jewelry store while keeping everything client-side for this demo stage.

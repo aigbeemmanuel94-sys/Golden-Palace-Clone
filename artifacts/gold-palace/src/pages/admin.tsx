@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "wouter";
 import { useGetMe, getGetMeQueryKey } from "@workspace/api-client-react";
-
-const API = import.meta.env.VITE_API_URL ?? "http://localhost:8080";
+import { useQueryClient } from "@tanstack/react-query";
 
 type Stats = { totalUsers: number; totalOrders: number; totalRevenue: string; totalActivities: number; newsletterSubscribers: number };
 type AdminUser = { id: number; email: string; firstName: string; lastName: string; isAdmin: boolean; createdAt: string };
@@ -11,10 +9,109 @@ type ActivityLog = { id: number; userId: number | null; userEmail: string | null
 type Newsletter = { id: number; email: string; createdAt: string };
 
 const fetcher = async (path: string) => {
-  const res = await fetch(`${API}/api${path}`, { credentials: "include" });
+  const res = await fetch(`/api${path}`, { credentials: "include" });
   if (!res.ok) throw new Error(`${res.status}`);
   return res.json();
 };
+
+function AdminLoginForm({ onSuccess }: { onSuccess: () => void }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    if (!email.trim() || !password.trim()) {
+      setError("Please enter your email and password.");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const res = await fetch(`/api/auth/login`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim(), password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data?.message ?? "Invalid email or password.");
+        return;
+      }
+      if (!data.isAdmin) {
+        setError("This account does not have admin privileges.");
+        return;
+      }
+      onSuccess();
+    } catch {
+      setError("Unable to connect. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-10">
+          <h1 className="font-serif text-3xl text-[#C9A84C] mb-2">Gold Palace</h1>
+          <p className="text-gray-400 text-sm uppercase tracking-widest">Admin Portal</p>
+        </div>
+        <form
+          onSubmit={handleSubmit}
+          className="bg-gray-900 border border-gray-800 rounded-xl p-8 space-y-5 shadow-2xl"
+        >
+          <h2 className="text-white font-semibold text-lg mb-1">Sign in to your admin account</h2>
+
+          {error && (
+            <div className="bg-red-900/40 border border-red-700 text-red-300 text-sm rounded-lg px-4 py-3">
+              {error}
+            </div>
+          )}
+
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-1.5">Email address</label>
+            <input
+              type="email"
+              autoFocus
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="admin@example.com"
+              className="w-full bg-gray-800 border border-gray-700 text-white placeholder-gray-600 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A84C] focus:border-transparent transition"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-1.5">Password</label>
+            <input
+              type="password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              className="w-full bg-gray-800 border border-gray-700 text-white placeholder-gray-600 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A84C] focus:border-transparent transition"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full bg-[#C9A84C] hover:bg-[#b8963e] disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold rounded-lg py-3 text-sm transition-colors"
+          >
+            {submitting ? "Signing in…" : "Sign In"}
+          </button>
+
+          <p className="text-center text-xs text-gray-600 pt-1">
+            <a href="/" className="text-[#C9A84C] hover:underline">← Back to store</a>
+          </p>
+        </form>
+      </div>
+    </div>
+  );
+}
 
 const Badge = ({ status }: { status: string }) => {
   const colors: Record<string, string> = {
@@ -52,7 +149,6 @@ const timeAgo = (date: string) => {
 };
 
 export function AdminPage() {
-  const [, setLocation] = useLocation();
   const [tab, setTab] = useState<"overview" | "users" | "orders" | "activity" | "newsletter">("overview");
   const [stats, setStats] = useState<Stats | null>(null);
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -65,13 +161,15 @@ export function AdminPage() {
   const [userSearch, setUserSearch] = useState("");
   const [activitySearch, setActivitySearch] = useState("");
 
-  const { data: me, isLoading: meLoading } = useGetMe({ query: { queryKey: getGetMeQueryKey() } });
+  const queryClient = useQueryClient();
+  const { data: me, isLoading: meLoading } = useGetMe({ query: { queryKey: getGetMeQueryKey(), retry: false } });
 
-  useEffect(() => {
-    if (!meLoading && (!me || !(me as { isAdmin?: boolean }).isAdmin)) {
-      setLocation("/");
-    }
-  }, [me, meLoading, setLocation]);
+  const notAuthenticated = !meLoading && !me;
+  const notAdmin = !meLoading && me && !(me as { isAdmin?: boolean }).isAdmin;
+
+  const handleLoginSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: getGetMeQueryKey() });
+  };
 
   useEffect(() => {
     if (!me || !(me as { isAdmin?: boolean }).isAdmin) return;
@@ -100,7 +198,7 @@ export function AdminPage() {
   }, [me]);
 
   const handleStatusChange = async (orderId: number, status: string) => {
-    await fetch(`${API}/api/admin/orders/${orderId}/status`, {
+    await fetch(`/api/admin/orders/${orderId}/status`, {
       method: "PATCH",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -109,12 +207,31 @@ export function AdminPage() {
     setOrders((prev) => prev.map((o) => (o.id === orderId ? { ...o, status } : o)));
   };
 
-  if (meLoading || loading) {
+  if (meLoading) {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-10 h-10 border-4 border-[#C9A84C] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-gray-500 text-sm">Checking authentication…</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (notAuthenticated || notAdmin) {
+    return (
+      <AdminLoginForm
+        onSuccess={handleLoginSuccess}
+      />
+    );
+  }
+
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="w-10 h-10 border-4 border-[#C9A84C] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-gray-500 text-sm">Loading admin panel...</p>
+          <p className="text-gray-500 text-sm">Loading admin panel…</p>
         </div>
       </div>
     );

@@ -46,6 +46,13 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - `/` — Home (hero, categories, new arrivals, trending, trust badges, newsletter)
 - `/login` — Login form
 - `/register` — Register form (first name, last name, email, password)
+- `/account` — My Account (profile edit, order history, wishlist, settings tabs)
+- `/category/:slug` — Category product grid (rings, earrings, mangalsutra, necklace, bracelet, chain, pendant)
+- `/about` — Our Story heritage page
+- `/craftsmanship` — Master Craftsmanship page (6-step atelier process)
+- `/contact`, `/shipping`, `/faq`, `/size-guide`, `/jewelry-care`, `/materials` — Customer care & info pages
+- `/blog`, `/press` — Editorial pages
+- `/privacy`, `/terms` — Legal pages
 
 ### Database Tables
 - `users` — id, email, password_hash, first_name, last_name, created_at

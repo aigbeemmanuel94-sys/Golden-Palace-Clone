@@ -3,6 +3,7 @@ import { Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
+import { CartSidebar } from "@/components/cart-sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, ShieldCheck, Diamond, Gem, Award, X } from "lucide-react";
@@ -27,6 +28,7 @@ export default function Home() {
   const queryClient = useQueryClient();
   const [email, setEmail] = useState("");
   const [showPopup, setShowPopup] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
 
   const { data: user } = useGetMe({ query: { queryKey: getGetMeQueryKey() } });
   
@@ -57,6 +59,7 @@ export default function Home() {
       }, 2000);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, []);
 
   const handleSubscribe = (e: React.FormEvent) => {
@@ -103,6 +106,7 @@ export default function Home() {
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: getGetCartQueryKey() });
+          setCartOpen(true);
           toast({
             title: "Added to Cart",
             description: "Item has been added to your shopping bag.",
@@ -114,7 +118,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col font-sans">
-      <Navbar />
+      <Navbar onCartOpen={() => setCartOpen(true)} />
+      <CartSidebar open={cartOpen} onClose={() => setCartOpen(false)} />
 
       <main className="flex-1">
         {/* HERO SECTION - BRIGHT & LUXURIOUS */}
@@ -143,15 +148,21 @@ export default function Home() {
                 One of the world's oldest online jewelry shops since 1994. Master artisans. 100% authentic 22K gold &amp; conflict-free diamonds.
               </p>
               <div className="flex flex-col sm:flex-row gap-6 justify-start items-center">
-                <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm tracking-widest uppercase h-14 px-10 rounded-none w-full sm:w-auto">
-                  Shop 22K Gold
-                </Button>
-                <Button size="lg" variant="outline" className="border-primary text-foreground hover:bg-primary hover:text-primary-foreground text-sm tracking-widest uppercase h-14 px-10 rounded-none w-full sm:w-auto bg-transparent/50 backdrop-blur-sm">
-                  Shop Diamonds
-                </Button>
-                <Button size="lg" variant="ghost" className="text-foreground hover:text-primary hover:bg-transparent text-sm tracking-widest uppercase h-14 px-8 rounded-none w-full sm:w-auto border-b border-transparent hover:border-primary">
-                  New Arrivals
-                </Button>
+                <Link href="/category/rings">
+                  <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm tracking-widest uppercase h-14 px-10 rounded-none w-full sm:w-auto">
+                    Shop 22K Gold
+                  </Button>
+                </Link>
+                <Link href="/category/mangalsutra">
+                  <Button size="lg" variant="outline" className="border-primary text-foreground hover:bg-primary hover:text-primary-foreground text-sm tracking-widest uppercase h-14 px-10 rounded-none w-full sm:w-auto bg-transparent/50 backdrop-blur-sm">
+                    Shop Diamonds
+                  </Button>
+                </Link>
+                <a href="#new-arrivals">
+                  <Button size="lg" variant="ghost" className="text-foreground hover:text-primary hover:bg-transparent text-sm tracking-widest uppercase h-14 px-8 rounded-none w-full sm:w-auto border-b border-transparent hover:border-primary">
+                    New Arrivals
+                  </Button>
+                </a>
               </div>
             </div>
           </div>
@@ -229,9 +240,11 @@ export default function Home() {
               <p className="text-white/70 text-base mb-10 font-light leading-relaxed">
                 Complete your special day with our exclusive collection of 22K gold antique bridal sets — rich with cultural heritage, heavy with gold, and treasured for generations.
               </p>
-              <Button className="bg-primary text-primary-foreground hover:bg-white hover:text-secondary rounded-none h-12 px-10 uppercase tracking-widest text-sm font-medium transition-colors">
-                Explore Bridal
-              </Button>
+              <Link href="/category/necklace">
+                <Button className="bg-primary text-primary-foreground hover:bg-white hover:text-secondary rounded-none h-12 px-10 uppercase tracking-widest text-sm font-medium transition-colors">
+                  Explore Bridal
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
@@ -295,7 +308,7 @@ export default function Home() {
             </div>
             
             <div className="mt-16 text-center">
-              <Link href="/new-arrivals">
+              <Link href="/category/rings">
                 <Button variant="outline" className="rounded-none border-foreground text-foreground hover:bg-foreground hover:text-background uppercase tracking-widest px-10 h-12">
                   Shop All New Arrivals
                 </Button>

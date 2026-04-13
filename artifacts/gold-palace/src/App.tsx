@@ -6,6 +6,11 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
+import CategoryPage from "@/pages/category";
+import AccountPage from "@/pages/account";
+import AboutPage from "@/pages/about";
+import CraftsmanshipPage from "@/pages/craftsmanship";
+import InfoPage from "@/pages/info";
 
 const queryClient = new QueryClient();
 
@@ -15,6 +20,21 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
+      <Route path="/account" component={AccountPage} />
+      <Route path="/category/:slug" component={CategoryPage} />
+      <Route path="/about" component={AboutPage} />
+      <Route path="/craftsmanship" component={CraftsmanshipPage} />
+      <Route path="/contact" component={InfoPage} />
+      <Route path="/shipping" component={InfoPage} />
+      <Route path="/faq" component={InfoPage} />
+      <Route path="/size-guide" component={InfoPage} />
+      <Route path="/jewelry-care" component={InfoPage} />
+      <Route path="/materials" component={InfoPage} />
+      <Route path="/privacy" component={InfoPage} />
+      <Route path="/terms" component={InfoPage} />
+      <Route path="/blog" component={InfoPage} />
+      <Route path="/press" component={InfoPage} />
+      <Route path="/new-arrivals" component={Home} />
       <Route component={NotFound} />
     </Switch>
   );

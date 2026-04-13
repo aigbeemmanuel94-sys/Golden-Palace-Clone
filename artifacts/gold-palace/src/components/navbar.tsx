@@ -63,12 +63,18 @@ export function Navbar({ onCartOpen }: NavbarProps = {}) {
 
   return (
     <header className="sticky top-0 left-0 right-0 z-50 bg-background flex flex-col border-b border-border shadow-sm">
-      {/* TOP PROMO STRIP */}
-      <div className="bg-secondary text-white py-1.5 text-center text-[11px] font-medium tracking-widest uppercase w-full">
-        10% OFF GOLD &amp; DIAMOND JEWELRY — USE CODE: IWD2026
-      </div>
+      {/* TOP PROMO STRIP — changes when signed in */}
+      {user ? (
+        <div className="bg-primary text-primary-foreground py-2 text-center text-[11px] font-medium tracking-widest uppercase w-full">
+          Welcome back, {user.firstName}! ✦ Member exclusive pricing applied
+        </div>
+      ) : (
+        <div className="bg-secondary text-white py-1.5 text-center text-[11px] font-medium tracking-widest uppercase w-full">
+          10% OFF GOLD &amp; DIAMOND JEWELRY — USE CODE: IWD2026
+        </div>
+      )}
       {/* SHIPPING STRIP */}
-      <div className="bg-primary/10 border-b border-primary/20 py-1.5 text-center text-[10px] font-medium tracking-[0.2em] text-foreground/70 uppercase w-full">
+      <div className={`border-b py-1.5 text-center text-[10px] font-medium tracking-[0.2em] uppercase w-full transition-colors ${user ? "bg-primary/15 border-primary/30 text-primary" : "bg-primary/10 border-primary/20 text-foreground/70"}`}>
         Complimentary Insured Shipping on all orders over $500
       </div>
 
@@ -138,8 +144,10 @@ export function Navbar({ onCartOpen }: NavbarProps = {}) {
                 onClick={() => setAccountMenuOpen(!accountMenuOpen)}
                 className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors"
               >
-                <User size={20} strokeWidth={1.5} />
-                <span className="hidden xl:inline">Hi, {user.firstName}</span>
+                <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold tracking-wide">
+                  {user.firstName?.[0]?.toUpperCase()}{user.lastName?.[0]?.toUpperCase()}
+                </div>
+                <span className="hidden xl:inline font-medium">Hi, {user.firstName}</span>
                 <ChevronDown size={13} className={`transition-transform ${accountMenuOpen ? "rotate-180" : ""}`} />
               </button>
               {accountMenuOpen && (
@@ -190,7 +198,7 @@ export function Navbar({ onCartOpen }: NavbarProps = {}) {
             <div className="relative">
               <ShoppingBag size={22} strokeWidth={1.5} />
               {user && cartCount > 0 && (
-                <span className="absolute -top-1.5 -right-2 bg-primary text-white text-[9px] font-bold w-4.5 h-4.5 min-w-[18px] h-[18px] rounded-full flex items-center justify-center leading-none px-1">
+                <span className="absolute -top-2 -right-2 bg-primary text-white text-[9px] font-bold min-w-[18px] h-[18px] rounded-full flex items-center justify-center leading-none px-1">
                   {cartCount}
                 </span>
               )}

@@ -157,10 +157,10 @@ export default function CategoryPage() {
                       <span className="text-xs text-muted-foreground mb-4">{product.weight ?? "22K Gold"}</span>
                       <div className="flex items-center justify-center gap-3 mb-6">
                         {product.originalPrice && (
-                          <span className="text-muted-foreground line-through text-sm">{product.originalPrice}</span>
+                          <span className="text-muted-foreground line-through text-sm">${Number(product.originalPrice.replace(/[^0-9.]/g, '')).toLocaleString()}</span>
                         )}
                         <span className={`font-serif text-lg font-medium ${pct ? "text-destructive" : "text-foreground"}`}>
-                          {product.price}
+                          ${Number(product.price.replace(/[^0-9.]/g, '')).toLocaleString()}
                         </span>
                       </div>
                       <Button

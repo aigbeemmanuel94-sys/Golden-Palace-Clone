@@ -301,7 +301,7 @@ export default function Home() {
                       {product.weight ? product.weight : "22K Gold"}
                     </span>
                     
-                    <p className="font-serif text-lg font-medium text-foreground mb-6">{product.price}</p>
+                    <p className="font-serif text-lg font-medium text-foreground mb-6">${Number(product.price.replace(/[^0-9.]/g, '')).toLocaleString()}</p>
                     
                     <Button 
                       className="w-full rounded-none bg-transparent border border-primary text-primary hover:bg-primary hover:text-white uppercase tracking-widest text-[11px] h-11"
@@ -382,9 +382,9 @@ export default function Home() {
                     
                     <div className="flex items-center justify-center gap-3 mb-6">
                       {product.originalPrice && (
-                        <span className="text-muted-foreground line-through text-sm">{product.originalPrice}</span>
+                        <span className="text-muted-foreground line-through text-sm">${Number(product.originalPrice.replace(/[^0-9.]/g, '')).toLocaleString()}</span>
                       )}
-                      <span className="font-serif text-lg font-medium text-destructive">{product.price}</span>
+                      <span className="font-serif text-lg font-medium text-destructive">${Number(product.price.replace(/[^0-9.]/g, '')).toLocaleString()}</span>
                     </div>
                     
                     <Button 

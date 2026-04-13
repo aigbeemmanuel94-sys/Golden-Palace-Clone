@@ -127,7 +127,7 @@ export function CartSidebar({ open, onClose }: CartSidebarProps) {
                     Qty: {item.quantity}
                   </p>
                   <p className="font-serif text-base text-foreground">
-                    {item.product?.price}
+                    ${item.product?.price ? Number(item.product.price.replace(/[^0-9.]/g, '')).toLocaleString() : '0'}
                   </p>
                 </div>
                 <button

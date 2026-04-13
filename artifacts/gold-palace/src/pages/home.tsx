@@ -84,6 +84,14 @@ export default function Home() {
     );
   };
 
+  const getDiscountPct = (price: string, originalPrice?: string | null) => {
+    if (!originalPrice) return null;
+    const sale = parseFloat(price.replace(/[^0-9.]/g, ""));
+    const orig = parseFloat(originalPrice.replace(/[^0-9.]/g, ""));
+    if (!orig || orig <= sale) return null;
+    return Math.round((1 - sale / orig) * 100);
+  };
+
   const handleAddToCart = (productId: number) => {
     if (!user) {
       setLocation("/login");
@@ -123,11 +131,16 @@ export default function Home() {
           
           <div className="relative z-10 container mx-auto px-4 md:px-8 flex flex-col items-start justify-center h-full">
             <div className="max-w-2xl text-left">
+              <span className="inline-block text-[11px] font-medium tracking-[0.3em] text-primary uppercase mb-5 border border-primary/40 px-3 py-1">
+                Est. 1994 — World's First 22K Gold Jewelry Online Store
+              </span>
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif text-foreground mb-6 leading-[1.1] drop-shadow-sm">
-                One of the World's Oldest Online Jewelry Shops
+                Heirloom Elegance,{" "}
+                <span className="italic text-primary">Masterfully</span>{" "}
+                Crafted
               </h1>
-              <p className="text-lg md:text-xl text-muted-foreground mb-12 font-light leading-relaxed max-w-xl">
-                Trusted since 1994, we specialize in curating heirloom investment-grade 22K gold and diamond jewelry.
+              <p className="text-base md:text-lg text-muted-foreground mb-12 font-light leading-relaxed max-w-xl">
+                One of the world's oldest online jewelry shops since 1994. Master artisans. 100% authentic 22K gold &amp; conflict-free diamonds.
               </p>
               <div className="flex flex-col sm:flex-row gap-6 justify-start items-center">
                 <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm tracking-widest uppercase h-14 px-10 rounded-none w-full sm:w-auto">
@@ -201,6 +214,28 @@ export default function Home() {
           </div>
         </section>
 
+        {/* BRIDAL TROUSSEAU SECTION */}
+        <section className="py-24 bg-secondary text-white relative overflow-hidden">
+          <div className="absolute inset-0 opacity-20 pointer-events-none">
+            <img src="/images/hero-bright.png" alt="" className="w-full h-full object-cover object-right" />
+            <div className="absolute inset-0 bg-gradient-to-r from-secondary via-secondary/90 to-secondary/40"></div>
+          </div>
+          <div className="container mx-auto px-4 md:px-8 relative z-10">
+            <div className="max-w-xl">
+              <span className="inline-block text-[10px] font-medium tracking-[0.3em] text-primary uppercase mb-5 border border-primary/40 px-3 py-1">
+                Exclusive Collection
+              </span>
+              <h2 className="font-serif text-4xl md:text-5xl mb-6 leading-tight">The Bridal Trousseau</h2>
+              <p className="text-white/70 text-base mb-10 font-light leading-relaxed">
+                Complete your special day with our exclusive collection of 22K gold antique bridal sets — rich with cultural heritage, heavy with gold, and treasured for generations.
+              </p>
+              <Button className="bg-primary text-primary-foreground hover:bg-white hover:text-secondary rounded-none h-12 px-10 uppercase tracking-widest text-sm font-medium transition-colors">
+                Explore Bridal
+              </Button>
+            </div>
+          </div>
+        </section>
+
         {/* NEW ARRIVALS */}
         <section id="new-arrivals" className="py-24 bg-muted/30 border-y border-border/50">
           <div className="container mx-auto px-4 md:px-8">
@@ -236,8 +271,9 @@ export default function Home() {
                     </span>
                     <h3 className="font-sans text-sm text-foreground mb-2 leading-relaxed flex-1">{product.name}</h3>
                     
-                    {/* Fake weight info for demonstration since it's not in the type, but requested */}
-                    <span className="text-xs text-muted-foreground mb-4">22K Gold</span>
+                    <span className="text-xs text-muted-foreground mb-4">
+                      {product.weight ? product.weight : "22K Gold"}
+                    </span>
                     
                     <p className="font-serif text-lg font-medium text-foreground mb-6">{product.price}</p>
                     
@@ -291,9 +327,14 @@ export default function Home() {
                 <div key={product.id} className="bg-card p-4 border border-border hover:shadow-md transition-shadow flex flex-col h-full group relative" data-testid={`product-card-${product.id}`}>
                   
                   {/* Discount Badge */}
-                  <div className="absolute top-6 left-6 z-10 bg-destructive text-white text-[11px] font-bold px-3 py-1.5 uppercase tracking-wider">
-                    -25%
-                  </div>
+                  {(() => {
+                    const pct = getDiscountPct(product.price, product.originalPrice);
+                    return pct ? (
+                      <div className="absolute top-6 left-6 z-10 bg-destructive text-white text-[11px] font-bold px-3 py-1.5 uppercase tracking-wider">
+                        -{pct}%
+                      </div>
+                    ) : null;
+                  })()}
 
                   <div className="relative aspect-square mb-5 bg-muted/20 overflow-hidden">
                     <img 
@@ -308,6 +349,10 @@ export default function Home() {
                       {product.categoryId ? categories?.find(c => c.id === product.categoryId)?.name || 'Jewelry' : 'Jewelry'}
                     </span>
                     <h3 className="font-sans text-sm text-foreground mb-2 leading-relaxed flex-1">{product.name}</h3>
+                    
+                    <span className="text-xs text-muted-foreground mb-3">
+                      {product.weight ? product.weight : "18K Gold"}
+                    </span>
                     
                     <div className="flex items-center justify-center gap-3 mb-6">
                       {product.originalPrice && (

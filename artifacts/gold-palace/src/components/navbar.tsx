@@ -35,7 +35,11 @@ export function Navbar() {
     <header className="sticky top-0 left-0 right-0 z-50 bg-background flex flex-col border-b border-border shadow-sm">
       {/* TOP PROMO STRIP */}
       <div className="bg-secondary text-white py-1.5 text-center text-[11px] font-medium tracking-widest uppercase w-full">
-        10% OFF GOLD & DIAMOND JEWELRY - IWD2026
+        10% OFF GOLD &amp; DIAMOND JEWELRY - IWD2026
+      </div>
+      {/* SHIPPING STRIP */}
+      <div className="bg-primary/10 border-b border-primary/20 py-1.5 text-center text-[10px] font-medium tracking-[0.2em] text-foreground/70 uppercase w-full">
+        Complimentary Insured Shipping on all orders over $500
       </div>
 
       {/* MAIN HEADER ROW */}
@@ -102,7 +106,7 @@ export function Navbar() {
               )}
             </div>
             <span className="hidden xl:inline-block text-sm font-medium">
-              Shopping Cart {user && cart ? `[${cart.length}]` : '[0]'} items
+              Shopping Cart ({user && cart ? cart.length : 0} items)
             </span>
           </button>
         </div>

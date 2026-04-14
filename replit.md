@@ -37,8 +37,13 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - Full user authentication (register with email/password, login, logout)
 - Email addresses stored securely in PostgreSQL (bcrypt hashed passwords)
 - Product listings from DB (new arrivals + trending with sale prices)
-- Category navigation (Rings, Earrings, Mangalsutra, Necklace, Bracelet, Chain, Pendant)
-- Cart system (add/update/remove items, per user)
+- Category navigation (Rings, Earrings, Gold Bar, Necklace, Bracelet, Chain, Pendant)
+- All 7 categories use real product photos (no Unsplash placeholders)
+- All 60+ products use real jewelry photos with USD prices based on gold weight + karat
+- Pricing formula: 18K = $80/g, 21K = $93/g, 999.9 purity = $106/g
+- Cart system: add/update/remove items, quantity +/− controls, per user
+- Cart sidebar: Notes, Shipping estimator (country/state worldwide, free ≥$500), Discount code (IWD2026 = 10% off)
+- Signed-in navbar: gold avatar circle with initials, personalized promo strip, gold tinted shipping strip
 - Newsletter subscription (stored email addresses)
 - Session-based auth (30-day cookies)
 

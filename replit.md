@@ -36,6 +36,8 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 ### Features
 - Full user authentication (register with email/password, login, logout)
 - Email addresses stored securely in PostgreSQL (bcrypt hashed passwords)
+- Admin product management: add/edit/delete products with image uploads stored in Replit Object Storage (no source-tree files)
+- Auto-seed: on first boot, the API server populates the empty production DB with all 7 categories + 29 starter products so the published site looks identical to dev
 - Product listings from DB (new arrivals + trending with sale prices)
 - Category navigation (Rings, Earrings, Gold Bar, Necklace, Bracelet, Chain, Pendant)
 - All 7 categories use real product photos (no Unsplash placeholders)

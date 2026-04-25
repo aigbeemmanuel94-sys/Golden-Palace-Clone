@@ -201,3 +201,98 @@ export const RemoveCartItemParams = zod.object({
 export const SubscribeNewsletterBody = zod.object({
   email: zod.string().email(),
 });
+
+/**
+ * @summary Request a presigned URL for file upload
+ */
+
+export const RequestUploadUrlBody = zod.object({
+  name: zod.string().min(1),
+  size: zod.number().min(1),
+  contentType: zod.string().min(1),
+});
+
+export const RequestUploadUrlResponse = zod.object({
+  uploadURL: zod.string(),
+  objectPath: zod.string(),
+});
+
+/**
+ * @summary Serve an uploaded object
+ */
+export const GetStorageObjectParams = zod.object({
+  objectPath: zod.coerce.string(),
+});
+
+/**
+ * @summary Serve a public asset
+ */
+export const GetPublicStorageObjectParams = zod.object({
+  filePath: zod.coerce.string(),
+});
+
+/**
+ * @summary Create a new product
+ */
+
+export const CreateProductBody = zod.object({
+  name: zod.string().min(1),
+  description: zod.string().nullish(),
+  price: zod.string().min(1),
+  originalPrice: zod.string().nullish(),
+  imageUrl: zod.string().min(1),
+  categoryId: zod.number().nullish(),
+  categoryName: zod.string().nullish(),
+  isNewArrival: zod.boolean().optional(),
+  isTrending: zod.boolean().optional(),
+  badge: zod.string().nullish(),
+  weight: zod.string().nullish(),
+});
+
+/**
+ * @summary Update a product
+ */
+export const UpdateProductParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const UpdateProductBody = zod.object({
+  name: zod.string().min(1),
+  description: zod.string().nullish(),
+  price: zod.string().min(1),
+  originalPrice: zod.string().nullish(),
+  imageUrl: zod.string().min(1),
+  categoryId: zod.number().nullish(),
+  categoryName: zod.string().nullish(),
+  isNewArrival: zod.boolean().optional(),
+  isTrending: zod.boolean().optional(),
+  badge: zod.string().nullish(),
+  weight: zod.string().nullish(),
+});
+
+export const UpdateProductResponse = zod.object({
+  id: zod.number(),
+  name: zod.string(),
+  description: zod.string().nullish(),
+  price: zod.string(),
+  originalPrice: zod.string().nullish(),
+  imageUrl: zod.string(),
+  categoryId: zod.number().nullish(),
+  categoryName: zod.string().nullish(),
+  isNewArrival: zod.boolean(),
+  isTrending: zod.boolean(),
+  badge: zod.string().nullish(),
+  weight: zod.string().nullish(),
+  createdAt: zod.coerce.date(),
+});
+
+/**
+ * @summary Delete a product
+ */
+export const DeleteProductParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const DeleteProductResponse = zod.object({
+  message: zod.string(),
+});

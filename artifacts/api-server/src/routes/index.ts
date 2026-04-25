@@ -6,6 +6,7 @@ import categoriesRouter from "./categories";
 import cartRouter from "./cart";
 import newsletterRouter from "./newsletter";
 import adminRouter from "./admin";
+import storageRouter from "./storage";
 
 const router: IRouter = Router();
 
@@ -16,5 +17,6 @@ router.use(categoriesRouter);
 router.use(cartRouter);
 router.use(newsletterRouter);
 router.use(adminRouter);
+router.use(storageRouter);
 
 export default router;

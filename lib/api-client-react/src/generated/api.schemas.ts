@@ -89,6 +89,43 @@ export interface NewsletterSubscribeBody {
   email: string;
 }
 
+export interface UploadUrlRequest {
+  /** @minLength 1 */
+  name: string;
+  /** @minimum 1 */
+  size: number;
+  /** @minLength 1 */
+  contentType: string;
+}
+
+export interface UploadUrlResponse {
+  uploadURL: string;
+  objectPath: string;
+}
+
+export interface ProductInput {
+  /** @minLength 1 */
+  name: string;
+  /** @nullable */
+  description?: string | null;
+  /** @minLength 1 */
+  price: string;
+  /** @nullable */
+  originalPrice?: string | null;
+  /** @minLength 1 */
+  imageUrl: string;
+  /** @nullable */
+  categoryId?: number | null;
+  /** @nullable */
+  categoryName?: string | null;
+  isNewArrival?: boolean;
+  isTrending?: boolean;
+  /** @nullable */
+  badge?: string | null;
+  /** @nullable */
+  weight?: string | null;
+}
+
 export type ListProductsParams = {
   categoryId?: number;
   isNewArrival?: boolean;

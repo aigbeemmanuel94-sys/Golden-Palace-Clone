@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useGetMe, getGetMeQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useUpload } from "@workspace/object-storage-web";
 
 type Stats = { totalUsers: number; totalOrders: number; totalRevenue: string; totalActivities: number; newsletterSubscribers: number };
 type AdminUser = { id: number; email: string; firstName: string; lastName: string; isAdmin: boolean; createdAt: string };
 type Order = { id: number; userId: number | null; userEmail: string | null; userName: string | null; status: string; items: unknown; subtotal: string; shippingCost: string; total: string; shippingAddress: unknown; paymentMethod: string | null; transactionId: string | null; createdAt: string };
 type ActivityLog = { id: number; userId: number | null; userEmail: string | null; userName: string | null; action: string; metadata: unknown; ipAddress: string | null; userAgent: string | null; createdAt: string };
 type Newsletter = { id: number; email: string; createdAt: string };
+type Category = { id: number; name: string; slug: string; imageUrl: string | null };
+type Product = { id: number; name: string; description: string | null; price: string; originalPrice: string | null; imageUrl: string; categoryId: number | null; categoryName: string | null; isNewArrival: boolean; isTrending: boolean; badge: string | null; weight: string | null; createdAt: string };
 
 const fetcher = async (path: string) => {
   const res = await fetch(`/api${path}`, { credentials: "include" });
@@ -149,17 +152,26 @@ const timeAgo = (date: string) => {
 };
 
 export function AdminPage() {
-  const [tab, setTab] = useState<"overview" | "users" | "orders" | "activity" | "newsletter">("overview");
+  const [tab, setTab] = useState<"overview" | "products" | "users" | "orders" | "activity" | "newsletter">("overview");
   const [stats, setStats] = useState<Stats | null>(null);
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [activity, setActivity] = useState<ActivityLog[]>([]);
   const [newsletter, setNewsletter] = useState<Newsletter[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [orderSearch, setOrderSearch] = useState("");
   const [userSearch, setUserSearch] = useState("");
   const [activitySearch, setActivitySearch] = useState("");
+  const [productSearch, setProductSearch] = useState("");
+
+  const reloadProducts = async () => {
+    const [p, c] = await Promise.all([fetcher("/products"), fetcher("/categories")]);
+    setProducts(p);
+    setCategories(c);
+  };
 
   const queryClient = useQueryClient();
   const { data: me, isLoading: meLoading } = useGetMe({ query: { queryKey: getGetMeQueryKey(), retry: false } });
@@ -176,18 +188,22 @@ export function AdminPage() {
     const load = async () => {
       setLoading(true);
       try {
-        const [s, u, o, a, n] = await Promise.all([
+        const [s, u, o, a, n, p, c] = await Promise.all([
           fetcher("/admin/stats"),
           fetcher("/admin/users"),
           fetcher("/admin/orders"),
           fetcher("/admin/activity"),
           fetcher("/admin/newsletter"),
+          fetcher("/products"),
+          fetcher("/categories"),
         ]);
         setStats(s);
         setUsers(u);
         setOrders(o);
         setActivity(a);
         setNewsletter(n);
+        setProducts(p);
+        setCategories(c);
       } catch (e) {
         setError("Failed to load admin data.");
       } finally {
@@ -247,6 +263,7 @@ export function AdminPage() {
 
   const tabs = [
     { id: "overview", label: "Overview" },
+    { id: "products", label: `Products (${products.length})` },
     { id: "users", label: `Users (${users.length})` },
     { id: "orders", label: `Orders (${orders.length})` },
     { id: "activity", label: `Activity (${activity.length})` },
@@ -391,6 +408,16 @@ export function AdminPage() {
               </div>
             </div>
           </div>
+        )}
+
+        {tab === "products" && (
+          <ProductsTab
+            products={products}
+            categories={categories}
+            search={productSearch}
+            setSearch={setProductSearch}
+            reload={reloadProducts}
+          />
         )}
 
         {tab === "users" && (
@@ -592,6 +619,425 @@ export function AdminPage() {
             </div>
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+type ProductFormState = {
+  name: string;
+  description: string;
+  price: string;
+  originalPrice: string;
+  imageUrl: string;
+  categoryId: string;
+  isNewArrival: boolean;
+  isTrending: boolean;
+  badge: string;
+  weight: string;
+};
+
+const emptyForm: ProductFormState = {
+  name: "",
+  description: "",
+  price: "",
+  originalPrice: "",
+  imageUrl: "",
+  categoryId: "",
+  isNewArrival: false,
+  isTrending: false,
+  badge: "",
+  weight: "",
+};
+
+function ProductsTab({
+  products,
+  categories,
+  search,
+  setSearch,
+  reload,
+}: {
+  products: Product[];
+  categories: Category[];
+  search: string;
+  setSearch: (s: string) => void;
+  reload: () => Promise<void>;
+}) {
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState<ProductFormState>(emptyForm);
+  const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+
+  const { uploadFile, isUploading, progress } = useUpload({
+    onSuccess: (resp) => {
+      const fullUrl = resp.objectPath.startsWith("/objects/")
+        ? `/api/storage${resp.objectPath}`
+        : resp.objectPath;
+      setForm((f) => ({ ...f, imageUrl: fullUrl }));
+    },
+    onError: (e) => setFormError(e.message),
+  });
+
+  const startCreate = () => {
+    setEditingId(null);
+    setForm(emptyForm);
+    setFormError(null);
+    setShowForm(true);
+  };
+
+  const startEdit = (p: Product) => {
+    setEditingId(p.id);
+    setForm({
+      name: p.name,
+      description: p.description ?? "",
+      price: p.price,
+      originalPrice: p.originalPrice ?? "",
+      imageUrl: p.imageUrl,
+      categoryId: p.categoryId ? String(p.categoryId) : "",
+      isNewArrival: p.isNewArrival,
+      isTrending: p.isTrending,
+      badge: p.badge ?? "",
+      weight: p.weight ?? "",
+    });
+    setFormError(null);
+    setShowForm(true);
+  };
+
+  const cancelForm = () => {
+    setShowForm(false);
+    setEditingId(null);
+    setForm(emptyForm);
+    setFormError(null);
+  };
+
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setFormError(null);
+    await uploadFile(file);
+    e.target.value = "";
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormError(null);
+
+    if (!form.name.trim() || !form.price.trim() || !form.imageUrl.trim()) {
+      setFormError("Name, price, and image are required.");
+      return;
+    }
+
+    const cat = categories.find((c) => String(c.id) === form.categoryId);
+    const payload = {
+      name: form.name.trim(),
+      description: form.description.trim() || null,
+      price: form.price.trim(),
+      originalPrice: form.originalPrice.trim() || null,
+      imageUrl: form.imageUrl.trim(),
+      categoryId: cat ? cat.id : null,
+      categoryName: cat ? cat.name : null,
+      isNewArrival: form.isNewArrival,
+      isTrending: form.isTrending,
+      badge: form.badge.trim() || null,
+      weight: form.weight.trim() || null,
+    };
+
+    setSaving(true);
+    try {
+      const url = editingId ? `/api/admin/products/${editingId}` : `/api/admin/products`;
+      const method = editingId ? "PATCH" : "POST";
+      const res = await fetch(url, {
+        method,
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || "Save failed");
+      }
+      await reload();
+      cancelForm();
+    } catch (err) {
+      setFormError(err instanceof Error ? err.message : "Save failed");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (p: Product) => {
+    if (!confirm(`Delete "${p.name}"? This cannot be undone.`)) return;
+    const res = await fetch(`/api/admin/products/${p.id}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+    if (res.ok) await reload();
+    else alert("Delete failed.");
+  };
+
+  const filtered = products.filter(
+    (p) =>
+      p.name.toLowerCase().includes(search.toLowerCase()) ||
+      (p.categoryName ?? "").toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+        <div className="p-4 border-b border-gray-200 flex items-center justify-between gap-3 flex-wrap">
+          <h2 className="font-semibold text-gray-800">Manage Products</h2>
+          <div className="flex items-center gap-2">
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by name or category…"
+              className="border border-gray-200 rounded px-3 py-1.5 text-sm w-64 focus:outline-none focus:ring-1 focus:ring-[#C9A84C]"
+            />
+            <button
+              onClick={startCreate}
+              className="bg-[#C9A84C] text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-[#b59440] transition-colors"
+            >
+              + Add Product
+            </button>
+          </div>
+        </div>
+
+        {showForm && (
+          <form onSubmit={handleSubmit} className="p-6 border-b border-gray-200 bg-gray-50 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold text-gray-800">
+                {editingId ? `Edit Product #${editingId}` : "New Product"}
+              </h3>
+              <button
+                type="button"
+                onClick={cancelForm}
+                className="text-gray-400 hover:text-gray-700 text-sm"
+              >
+                Cancel
+              </button>
+            </div>
+
+            {formError && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded text-sm">
+                {formError}
+              </div>
+            )}
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="md:col-span-2">
+                <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-1">
+                  Product Image *
+                </label>
+                <div className="flex items-start gap-4">
+                  {form.imageUrl ? (
+                    <img
+                      src={form.imageUrl}
+                      alt="preview"
+                      className="w-32 h-32 object-cover border border-gray-200 rounded"
+                    />
+                  ) : (
+                    <div className="w-32 h-32 bg-gray-100 border border-dashed border-gray-300 rounded flex items-center justify-center text-gray-400 text-xs">
+                      No image
+                    </div>
+                  )}
+                  <div className="flex-1 space-y-2">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFile}
+                      disabled={isUploading || saving}
+                      className="block text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-[#C9A84C] file:text-white file:text-sm file:font-medium hover:file:bg-[#b59440] file:cursor-pointer"
+                    />
+                    {isUploading && (
+                      <div className="text-xs text-gray-500">Uploading… {progress}%</div>
+                    )}
+                    <input
+                      value={form.imageUrl}
+                      onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
+                      placeholder="…or paste an image URL"
+                      className="w-full border border-gray-200 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#C9A84C]"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-1">Name *</label>
+                <input
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  className="w-full border border-gray-200 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#C9A84C]"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-1">Category</label>
+                <select
+                  value={form.categoryId}
+                  onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
+                  className="w-full border border-gray-200 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#C9A84C]"
+                >
+                  <option value="">— None —</option>
+                  {categories.map((c) => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-1">Price *</label>
+                <input
+                  value={form.price}
+                  onChange={(e) => setForm({ ...form, price: e.target.value })}
+                  placeholder="e.g. 1299.00"
+                  className="w-full border border-gray-200 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#C9A84C]"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-1">Original Price (for sale)</label>
+                <input
+                  value={form.originalPrice}
+                  onChange={(e) => setForm({ ...form, originalPrice: e.target.value })}
+                  placeholder="optional"
+                  className="w-full border border-gray-200 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#C9A84C]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-1">Weight</label>
+                <input
+                  value={form.weight}
+                  onChange={(e) => setForm({ ...form, weight: e.target.value })}
+                  placeholder="e.g. 5.2g"
+                  className="w-full border border-gray-200 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#C9A84C]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-1">Badge</label>
+                <input
+                  value={form.badge}
+                  onChange={(e) => setForm({ ...form, badge: e.target.value })}
+                  placeholder="e.g. Limited Edition"
+                  className="w-full border border-gray-200 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#C9A84C]"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-1">Description</label>
+                <textarea
+                  value={form.description}
+                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                  rows={3}
+                  className="w-full border border-gray-200 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#C9A84C]"
+                />
+              </div>
+
+              <div className="flex items-center gap-6 md:col-span-2">
+                <label className="flex items-center gap-2 text-sm text-gray-700">
+                  <input
+                    type="checkbox"
+                    checked={form.isNewArrival}
+                    onChange={(e) => setForm({ ...form, isNewArrival: e.target.checked })}
+                    className="rounded border-gray-300 text-[#C9A84C] focus:ring-[#C9A84C]"
+                  />
+                  New Arrival
+                </label>
+                <label className="flex items-center gap-2 text-sm text-gray-700">
+                  <input
+                    type="checkbox"
+                    checked={form.isTrending}
+                    onChange={(e) => setForm({ ...form, isTrending: e.target.checked })}
+                    className="rounded border-gray-300 text-[#C9A84C] focus:ring-[#C9A84C]"
+                  />
+                  Trending
+                </label>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={cancelForm}
+                className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={saving || isUploading}
+                className="bg-[#C9A84C] text-white px-5 py-2 rounded text-sm font-medium hover:bg-[#b59440] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {saving ? "Saving…" : editingId ? "Update Product" : "Create Product"}
+              </button>
+            </div>
+          </form>
+        )}
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 text-xs uppercase tracking-widest text-gray-500">
+              <tr>
+                <th className="px-4 py-3 text-left">Image</th>
+                <th className="px-4 py-3 text-left">Name</th>
+                <th className="px-4 py-3 text-left">Category</th>
+                <th className="px-4 py-3 text-left">Price</th>
+                <th className="px-4 py-3 text-left">Tags</th>
+                <th className="px-4 py-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {filtered.map((p) => (
+                <tr key={p.id} className="hover:bg-gray-50">
+                  <td className="px-4 py-3">
+                    <img src={p.imageUrl} alt={p.name} className="w-14 h-14 object-cover rounded border border-gray-100" />
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="font-medium text-gray-800">{p.name}</div>
+                    {p.description && <div className="text-xs text-gray-400 line-clamp-1 max-w-md">{p.description}</div>}
+                  </td>
+                  <td className="px-4 py-3 text-gray-600">{p.categoryName ?? "—"}</td>
+                  <td className="px-4 py-3">
+                    <div className="font-semibold text-gray-800">{fmt(p.price)}</div>
+                    {p.originalPrice && (
+                      <div className="text-xs text-gray-400 line-through">{fmt(p.originalPrice)}</div>
+                    )}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex flex-wrap gap-1">
+                      {p.isNewArrival && <span className="px-1.5 py-0.5 bg-green-100 text-green-700 text-xs rounded">New</span>}
+                      {p.isTrending && <span className="px-1.5 py-0.5 bg-orange-100 text-orange-700 text-xs rounded">Trending</span>}
+                      {p.badge && <span className="px-1.5 py-0.5 bg-purple-100 text-purple-700 text-xs rounded">{p.badge}</span>}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <div className="flex justify-end gap-2">
+                      <button
+                        onClick={() => startEdit(p)}
+                        className="text-[#C9A84C] hover:underline text-xs font-medium"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(p)}
+                        className="text-red-600 hover:underline text-xs font-medium"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {filtered.length === 0 && (
+            <p className="text-center py-8 text-gray-400">No products found.</p>
+          )}
+        </div>
       </div>
     </div>
   );

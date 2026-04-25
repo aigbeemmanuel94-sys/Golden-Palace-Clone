@@ -17,5 +17,8 @@ export * from "./loginBody";
 export * from "./messageResponse";
 export * from "./newsletterSubscribeBody";
 export * from "./product";
+export * from "./productInput";
 export * from "./registerBody";
 export * from "./updateCartItemBody";
+export * from "./uploadUrlRequest";
+export * from "./uploadUrlResponse";
